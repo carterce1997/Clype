@@ -12,6 +12,7 @@ public class ClientSideServerListener implements Runnable {
 		while ( client.connectionOpen() ) {
 			client.recieveData();
 			client.printData();
+			// whats up
 		}
 	}
 
