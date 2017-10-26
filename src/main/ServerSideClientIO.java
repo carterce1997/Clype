@@ -37,9 +37,9 @@ public class ServerSideClientIO implements Runnable {
 
 			while ( ! this.closeConnection ) {
 				this.recieveData();
-				if (this.dataToRecieveFromClient == null) {
+				if (this.dataToRecieveFromClient != null) {
 					this.setSendDataToClient( this.dataToRecieveFromClient );
-					this.server.broadcast( this.dataToSendToClient ); // IO EXCEPTION 
+					this.server.broadcast( this.dataToSendToClient );
 					this.dataToSendToClient = null;
 				}
 			}
