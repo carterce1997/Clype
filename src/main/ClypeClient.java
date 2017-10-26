@@ -236,7 +236,6 @@ public class ClypeClient {
 	}
 	
 	public static void main( String[] args ) {
-//		try {
 		ClypeClient client;
 		if (args.length > 0) {
 			Scanner argScanner = new Scanner( args[0] );
@@ -267,11 +266,6 @@ public class ClypeClient {
 		} else {
 			client = new ClypeClient();
 		}
-		client.start();
-			
-//		} catch (Exception e) {
-//			System.err.println( e.getMessage() );
-//		}
-		
+		client.start();	
 	}
 }

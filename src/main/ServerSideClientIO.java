@@ -54,7 +54,6 @@ public class ServerSideClientIO implements Runnable {
 		}
 	}
 	
-	// PROBLEM HERE
 	public void recieveData() {
 		try {
 			this.dataToRecieveFromClient = (ClypeData) this.inFromClient.readObject();
@@ -66,7 +65,6 @@ public class ServerSideClientIO implements Runnable {
 		}
 	}
 	
-	// PROBLEM HERE
 	public void sendData() {
 		try {
 			this.outToClient.writeObject( this.dataToSendToClient );
