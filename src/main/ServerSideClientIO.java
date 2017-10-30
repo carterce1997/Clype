@@ -54,7 +54,7 @@ public class ServerSideClientIO implements Runnable {
 		}
 	}
 	
-	public void recieveData() {
+	public void recieveData() {// NEED TO IMPLEMENT REMOVE
 		try {
 			this.dataToRecieveFromClient = (ClypeData) this.inFromClient.readObject();
 		} catch (IOException ioe ) {
