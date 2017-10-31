@@ -17,7 +17,10 @@ import java.util.Scanner;
  *
  */
 public class ClypeClient {
-	public static final int DEFAULT_PORT = 7000;
+	private final static int DEFAULT_PORT = 7000;
+	private final static int MININMUM_PORT_NUM = 1024;
+	private final static String ANONYMOUS_USER = "Anon";
+	private final static String LOCAL_HOST = "localhost";
 
 	private String userName;
 	private String hostName;
@@ -41,7 +44,16 @@ public class ClypeClient {
 	 * @param port
 	 *            The port.
 	 */
-	public ClypeClient(String userName, String hostName, int port) {
+	public ClypeClient(String userName, String hostName, int port) throws IllegalArgumentException {
+		if (port < MININMUM_PORT_NUM) {
+			throw new IllegalArgumentException("Illegal port number given to ClypeClient constructor");
+		}
+		if (userName == null) {
+			throw new IllegalArgumentException("null user name given to ClypeClient constructor");
+		}
+		if (hostName == null) {
+			throw new IllegalArgumentException("null host namegiven to ClypeClient constructor");
+		}
 		this.userName = userName;
 		this.hostName = hostName;
 		this.port = port;
@@ -70,7 +82,7 @@ public class ClypeClient {
 	 *            The client username.
 	 */
 	public ClypeClient(String userName) {
-		this(userName, "localhost");
+		this(userName, LOCAL_HOST);
 	}
 
 	/**
@@ -78,7 +90,7 @@ public class ClypeClient {
 	 * "localhost", and the port to 7000.
 	 */
 	public ClypeClient() {
-		this("anon");
+		this(ANONYMOUS_USER);
 	}
 
 	/**
@@ -87,23 +99,28 @@ public class ClypeClient {
 	public void start() {
 		try {
 			this.inFromStd = new java.util.Scanner(System.in);
-			System.out.println("Read client data:");
-			this.readClientData();
-
+			System.out.println("Attempting to connect to server.");
 			Socket socket = new Socket(this.hostName, this.port);
 
 			this.outToServer = new ObjectOutputStream(socket.getOutputStream());
 			this.inFromServer = new ObjectInputStream(socket.getInputStream());
+			System.out.println("Connected to server.");
 
 			Thread listener = new Thread(new ClientSideServerListener(this));
 			listener.start();
 
+			sendUserName();
+			System.out.println("Enter a message to send to other users: ");
+
 			while (!this.closeConnection) {
-				if (this.dataToSendToServer != null) {
-					this.sendData();
-				} else {
-					this.readClientData();
-				}
+				readClientData();
+				sendData();
+			}
+
+			try {
+				listener.join();
+			} catch (InterruptedException ie) {
+				System.err.println(ie.getMessage());
 			}
 
 			this.outToServer.close();
@@ -126,30 +143,70 @@ public class ClypeClient {
 
 	}
 
+	private void sendUserName() {
+		this.dataToSendToServer = new MessageClypeData(userName, userName, ClypeData.SEND_MESSAGE);
+		sendData();
+	}
+
 	/**
 	 * Reads client data from standard input.
 	 */
 	public void readClientData() {
-		try {
-			String doWhat = this.inFromStd.next().toString();
-			if (doWhat.equals("DONE")) {
-				System.out.println("Closing connection ");
-				this.dataToSendToServer = new MessageClypeData(this.userName, "LOG OUT", ClypeData.LOG_OUT);
-				this.closeConnection = true;
-				this.inFromStd.close();
-			} else if (doWhat.equals("SENDFILE")) {
-				String filename = this.inFromStd.next().toString();
-				this.dataToSendToServer = new FileClypeData(userName, filename, 2);
-				((FileClypeData) this.dataToSendToServer).readFileContents();
-			} else if (doWhat.equals("LISTUSERS")) {
-			} else {
-				this.inFromStd.nextLine();
-				String message = this.inFromStd.nextLine();
-				this.dataToSendToServer = new MessageClypeData(userName, message, 3);
+		String command = this.inFromStd.next();
+		if (command.equals("DONE")) {
+			System.out.println("Closing connection ");
+			this.dataToSendToServer = new MessageClypeData(userName, "LOG OUT", ClypeData.LOG_OUT);
+			this.closeConnection = true;
+			this.inFromStd.close();
+		} else if (command.equals("SENDFILE")) {
+
+			String fileName = this.inFromStd.next().toString();
+			try {
+				this.dataToSendToServer = new FileClypeData(userName, fileName, ClypeData.SEND_FILE);
+				((FileClypeData) (this.dataToSendToServer)).readFileContents();
+
+			} catch (FileNotFoundException fnfe) {
+				this.dataToSendToServer = null;
+				System.err.println("Client end - File was not found while reading client data.");
+			} catch (IOException ioe) {
+				this.dataToSendToServer = null;
+				System.err.println("Client end - Input output error (exception) while reading client data.");
 			}
-		} catch (IOException ioe) {
-			System.err.println("Issue reading client data");
+		} else if (command.equals("LISTUSERS")) {
+			this.dataToSendToServer = new MessageClypeData(userName, "list users", ClypeData.LIST_USERS);
+		} else {
+			String message = this.userName + ": " + command + this.inFromStd.nextLine();
+			this.dataToSendToServer = new MessageClypeData(userName, message, ClypeData.SEND_MESSAGE);
 		}
+
+	}
+
+	/**
+	 * Receives client data from the server.
+	 */
+	public boolean recieveData() {
+		try {
+			boolean socketClosed = false;
+			// System.err.println("closeConnection: " + this.closeConnection);
+			if (!this.closeConnection) {
+				this.dataToRecieveFromServer = (ClypeData) this.inFromServer.readObject();
+				if (this.dataToRecieveFromServer.getType() == ClypeData.LOG_OUT) {
+					socketClosed = true;
+				}
+			} else {
+				this.dataToRecieveFromServer = null;
+			}
+			return socketClosed;
+		} catch (IOException ioe) {
+			System.err.println("closeConnection: " + this.closeConnection);
+			System.err.println("Issue recieving data client side: " + ioe.getMessage());
+
+			ioe.printStackTrace();
+		} catch (ClassNotFoundException cnf) {
+			System.err.println("Class not found");
+			return false;
+		}
+		return false;
 	}
 
 	/**
@@ -157,24 +214,12 @@ public class ClypeClient {
 	 */
 	public void sendData() {
 		try {
-			this.outToServer.writeObject(this.dataToSendToServer);
+			if (this.dataToSendToServer != null) {
+				outToServer.writeObject(this.dataToSendToServer);
+			}
 			this.dataToSendToServer = null;
 		} catch (IOException ioe) {
 			System.err.println("Issue sending data");
-		}
-	}
-
-	/**
-	 * Receives client data from the server.
-	 */
-	public void recieveData() {
-		try {
-			this.dataToRecieveFromServer = (ClypeData) this.inFromServer.readObject();
-		} catch (IOException ioe) {
-			System.err.println("Issue recieving data client side");
-			this.closeConnection = true;
-		} catch (ClassNotFoundException cnf) {
-			System.err.println("Class not found");
 		}
 	}
 
@@ -265,6 +310,18 @@ public class ClypeClient {
 		return !this.closeConnection;
 	}
 
+	/**
+	 * The main method scans the input arguments for a user name, host name, and
+	 * port number. After obtaining this information, a ClypeClient object is
+	 * created and its start() method is called.
+	 * 
+	 * @param args
+	 *            Case (i): <username> e.g., java ClypeClient Sherlock Case (ii):
+	 *            <username>@<hostname> e.g., java ClypeClient
+	 *            Sherlock@192.168.23.45 Case (iii):
+	 *            <username>@<hostname>:<portnumber> e.g., java ClypeClient
+	 *            Sherlock@192.168.23.45:12415
+	 */
 	public static void main(String[] args) {
 		ClypeClient client;
 		if (args.length > 0) {

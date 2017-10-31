@@ -9,8 +9,9 @@ public class ClientSideServerListener implements Runnable {
 
 	@Override
 	public void run() {
-		while (client.connectionOpen()) {
-			client.recieveData();
+		boolean closedSocket = false;
+		while (client.connectionOpen() && !closedSocket) {
+			closedSocket = client.recieveData();
 			client.printData();
 		}
 	}

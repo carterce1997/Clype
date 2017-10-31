@@ -3,11 +3,14 @@ package main;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Scanner;
 
 import data.ClypeData;
+import data.MessageClypeData;
 
 public class ClypeServer {
+
 	public static final int DEFAULT_PORT = 7000;
 	private final static int MININMUM_PORT_NUM = 1024;
 
@@ -50,7 +53,6 @@ public class ClypeServer {
 				this.serverSideClientIOList.add(newServerSideClientIO);
 				Thread newClientThread = new Thread(newServerSideClientIO);
 				newClientThread.start();
-
 			}
 
 			socket.close();
@@ -60,14 +62,43 @@ public class ClypeServer {
 		}
 	}
 
+	/**
+	 * Broadcasts data to all clients
+	 * 
+	 * @param dataToBroadcastToClients
+	 *            message to be sent to all clients
+	 */
 	public synchronized void broadcast(ClypeData dataToBroadcastToClients) {
-		for (ServerSideClientIO io : this.serverSideClientIOList) {
-			io.setSendDataToClient(dataToBroadcastToClients);
-			io.sendData();
+		if (dataToBroadcastToClients.getType() != ClypeData.LIST_USERS) {
+			for (ServerSideClientIO io : this.serverSideClientIOList) {
+				io.setSendDataToClient(dataToBroadcastToClients);
+				io.sendData();
+			}
+		} else {
+			for (ServerSideClientIO io : this.serverSideClientIOList) {
+				io.setSendDataToClient(dataToBroadcastToClients);
+				io.sendData();
+			}
 		}
 	}
 
+	/**
+	 * Broadcasts data to one client
+	 * 
+	 * @param dataToBroadcastToClients
+	 *            message to be sent to one client only
+	 */
+	public synchronized void broadcast(ClypeData dataToBroadcastToClients, ServerSideClientIO client) {
+		if (dataToBroadcastToClients.getType() == ClypeData.LIST_USERS) {
+			String listOfUsers = getUsers();
+			MessageClypeData usersData = new MessageClypeData(client.getUserName(), listOfUsers, ClypeData.LIST_USERS);
+			client.sendData(usersData);
+		} else
+			client.sendData();
+	}
+
 	public synchronized void remove(ServerSideClientIO serverSideClientToRemove) {
+		System.out.println("Closed Connection with: " + serverSideClientToRemove.getUserName() + " at " + new Date());
 		this.serverSideClientIOList.remove(serverSideClientToRemove);
 	}
 
@@ -105,6 +136,26 @@ public class ClypeServer {
 		return result;
 	}
 
+	public String getUsers() {
+		String listOfUsers = "";
+		int userCounter = 1;
+		for (ServerSideClientIO io : this.serverSideClientIOList) {
+			listOfUsers += "User " + userCounter + ": " + io.getUserName() + System.getProperty("line.separator");
+			++userCounter;
+		}
+		return listOfUsers;
+	}
+
+	/**
+	 * Scans the given argument for a port number, creates a server object, and
+	 * calls its start() method.
+	 * 
+	 * 
+	 * @param args
+	 *            The argument for the port number that the server connects to.<br>
+	 *            Format for input: java ClypeServer \<portnumber\> <br>
+	 *            Format for input: java ClypeServer 12415
+	 */
 	public static void main(String[] args) {
 		try {
 			ClypeServer server;
