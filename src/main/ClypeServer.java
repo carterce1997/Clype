@@ -63,7 +63,7 @@ public class ClypeServer {
 	}
 
 	/**
-	 * Broadcasts data to all clients
+	 * Broadcasts data to all clients.
 	 * 
 	 * @param dataToBroadcastToClients
 	 *            message to be sent to all clients

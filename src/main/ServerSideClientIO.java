@@ -33,6 +33,9 @@ public class ServerSideClientIO implements Runnable {
 		this.clientUserName = null;
 	}
 
+	/***
+	 * Runs the server side listener.
+	 */
 	@Override
 	public void run() {
 		try {
@@ -59,12 +62,18 @@ public class ServerSideClientIO implements Runnable {
 		}
 	}
 
+	/***
+	 * Recieves the username from the client.
+	 */
 	public void recieveUserName() {
 		recieveData();
 		this.clientUserName = this.dataToRecieveFromClient.getUserName();
 		this.dataToRecieveFromClient = null;
 	}
 
+	/***
+	 * Recieve data from client. 
+	 */
 	public void recieveData() {
 		try {
 			dataToRecieveFromClient = (ClypeData) inFromClient.readObject();
@@ -92,6 +101,9 @@ public class ServerSideClientIO implements Runnable {
 		}
 	}
 
+	/***
+	 * Sends data to client.
+	 */
 	public void sendData() {
 		try {
 			this.outToClient.writeObject(this.dataToSendToClient);
@@ -100,6 +112,10 @@ public class ServerSideClientIO implements Runnable {
 		}
 	}
 
+	/*** 
+	 * Sends ClypeData object to client.
+	 * @param toSendToClient A ClypeData object to send to client.
+	 */
 	public void sendData(ClypeData toSendToClient) {
 		try {
 			this.outToClient.writeObject(toSendToClient);
@@ -108,10 +124,17 @@ public class ServerSideClientIO implements Runnable {
 		}
 	}
 
+	/***
+	 * Sets data to send to client
+	 * @param dataToSendToClient A ClypeData object to send to client.
+	 */
 	public void setSendDataToClient(ClypeData dataToSendToClient) {
 		this.dataToSendToClient = dataToSendToClient;
 	}
 
+	/***
+	 * Broadcasts data to clients.  
+	 */
 	public void broadcastToClient() {
 		if (this.dataToRecieveFromClient.getType() != ClypeData.LIST_USERS) {
 			this.server.broadcast(this.dataToSendToClient); // send to all clients

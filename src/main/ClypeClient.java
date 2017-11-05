@@ -143,6 +143,9 @@ public class ClypeClient {
 
 	}
 
+	/***
+	 * Sends the username of the client.
+	 */
 	private void sendUserName() {
 		this.dataToSendToServer = new MessageClypeData(userName, userName, ClypeData.SEND_MESSAGE);
 		sendData();

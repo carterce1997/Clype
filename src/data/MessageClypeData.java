@@ -1,6 +1,6 @@
 package data;
 
-/**
+/***
  * A class containing message data for Clype.
  * 
  * @author Chris
@@ -9,7 +9,7 @@ package data;
 public class MessageClypeData extends ClypeData {
 	private String message;
 
-	/**
+	/***
 	 * A constructor to initialize the class. Takes the user's username, message,
 	 * and connection type.
 	 * 
@@ -25,7 +25,7 @@ public class MessageClypeData extends ClypeData {
 		this.message = message;
 	}
 
-	/**
+	/***
 	 * A delegating default constructor. Defaults to username "Anon", connection
 	 * type 0, and no message data.
 	 */
@@ -34,7 +34,7 @@ public class MessageClypeData extends ClypeData {
 		this.message = "";
 	}
 
-	/**
+	/***
 	 * A constructor that initializes the class by encrypting the message with a
 	 * key.
 	 * 
@@ -52,7 +52,7 @@ public class MessageClypeData extends ClypeData {
 		this.message = super.encrypt(message, key);
 	}
 
-	/**
+	/***
 	 * Accessor for message data.
 	 * 
 	 * @return The message.
@@ -61,7 +61,7 @@ public class MessageClypeData extends ClypeData {
 		return this.message;
 	}
 
-	/**
+	/***
 	 * Accessor for encrypted message data in plaintext.
 	 * 
 	 * @return The decrypted message.

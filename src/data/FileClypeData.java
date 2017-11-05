@@ -2,7 +2,7 @@ package data;
 
 import java.io.*;
 
-/**
+/***
  * A class containing file data for Clype.
  * 
  * @author Chris Carter
@@ -12,7 +12,7 @@ public class FileClypeData extends ClypeData {
 	private String fileName;
 	private String fileContents;
 
-	/**
+	/***
 	 * A constructor for FileClypeData.
 	 * 
 	 * @param userName
@@ -28,7 +28,7 @@ public class FileClypeData extends ClypeData {
 		this.fileContents = null;
 	}
 
-	/**
+	/***
 	 * A default constructor that sets default userName to "Anon", fileName to "",
 	 * fileContents to null, and connection type to 0.
 	 */
@@ -38,7 +38,7 @@ public class FileClypeData extends ClypeData {
 		this.fileContents = null;
 	}
 
-	/**
+	/***
 	 * Sets the data fileName.
 	 * 
 	 * @param fileName
@@ -48,7 +48,7 @@ public class FileClypeData extends ClypeData {
 		this.fileName = fileName;
 	}
 
-	/**
+	/***
 	 * Returns filename.
 	 * 
 	 * @return The data filename.
@@ -57,7 +57,7 @@ public class FileClypeData extends ClypeData {
 		return this.fileName;
 	}
 
-	/**
+	/***
 	 * Returns the file contents.
 	 * 
 	 * @return Plaintext file contents.
@@ -66,7 +66,7 @@ public class FileClypeData extends ClypeData {
 		return this.fileContents;
 	}
 
-	/**
+	/***
 	 * Returns encrypted file contents in plaintext with appropriate key.
 	 * 
 	 * @param The
@@ -77,7 +77,7 @@ public class FileClypeData extends ClypeData {
 		return super.decrypt(this.fileContents, key);
 	}
 
-	/**
+	/***
 	 * Reads file contents into the class from the given filename.
 	 * 
 	 * @throws IOException
@@ -104,7 +104,7 @@ public class FileClypeData extends ClypeData {
 		}
 	}
 
-	/**
+	/***
 	 * Reads file contents into the class from the given filename, and encrypts
 	 * them.
 	 * 
@@ -134,7 +134,7 @@ public class FileClypeData extends ClypeData {
 		}
 	}
 
-	/**
+	/***
 	 * Writes file contents to the given filename.
 	 */
 	public void writeFileContents() {
@@ -149,7 +149,7 @@ public class FileClypeData extends ClypeData {
 		}
 	}
 
-	/**
+	/***
 	 * Encrypts file contents, and writes them to the given filename.
 	 * 
 	 * @param key
