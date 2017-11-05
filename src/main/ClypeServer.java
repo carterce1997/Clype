@@ -9,6 +9,11 @@ import java.util.Scanner;
 import data.ClypeData;
 import data.MessageClypeData;
 
+/**
+ * 
+ * @authors Jared Heidt, Chris Carter
+ *
+ */
 public class ClypeServer {
 
 	public static final int DEFAULT_PORT = 7000;
@@ -88,10 +93,10 @@ public class ClypeServer {
 	 * @param dataToBroadcastToClients
 	 *            message to be sent to one client only
 	 */
-	public synchronized void broadcast(ClypeData dataToBroadcastToClients, ServerSideClientIO client) {
-		if (dataToBroadcastToClients.getType() == ClypeData.LIST_USERS) {
-			String listOfUsers = getUsers();
-			MessageClypeData usersData = new MessageClypeData(client.getUserName(), listOfUsers, ClypeData.LIST_USERS);
+	public synchronized void broadcast(ClypeData dataToBroadcastToClient, ServerSideClientIO client) {
+		if (dataToBroadcastToClient.getType() == ClypeData.LIST_USERS) {
+			MessageClypeData usersData = new MessageClypeData(client.getUserName(), getListUsers(),
+					ClypeData.LIST_USERS);
 			client.sendData(usersData);
 		} else
 			client.sendData();
@@ -136,7 +141,7 @@ public class ClypeServer {
 		return result;
 	}
 
-	public String getUsers() {
+	public String getListUsers() {
 		String listOfUsers = "";
 		int userCounter = 1;
 		for (ServerSideClientIO io : this.serverSideClientIOList) {

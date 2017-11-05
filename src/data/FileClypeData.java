@@ -5,7 +5,7 @@ import java.io.*;
 /***
  * A class containing file data for Clype.
  * 
- * @author Chris Carter
+ * @authors Chris Carter, Jared Heidt
  *
  */
 public class FileClypeData extends ClypeData {

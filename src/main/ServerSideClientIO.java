@@ -7,6 +7,11 @@ import java.util.Date;
 
 import data.*;
 
+/**
+ * 
+ * @authors Jared Heidt, Chris Carter
+ *
+ */
 public class ServerSideClientIO implements Runnable {
 	private ClypeServer server;
 	private Socket clientSocket;
@@ -49,7 +54,7 @@ public class ServerSideClientIO implements Runnable {
 				recieveData();
 				if (this.dataToRecieveFromClient != null) {
 					this.setSendDataToClient(this.dataToRecieveFromClient);
-					this.broadcastToClient();
+					this.broadcastToClients();
 					this.dataToSendToClient = null;
 				}
 			}
@@ -72,17 +77,20 @@ public class ServerSideClientIO implements Runnable {
 	}
 
 	/***
-	 * Recieve data from client. 
+	 * Recieve data from client.
 	 */
 	public void recieveData() {
 		try {
 			dataToRecieveFromClient = (ClypeData) inFromClient.readObject();
+
 			if (dataToRecieveFromClient.getType() == (ClypeData.LOG_OUT)) {
 				this.dataToSendToClient = this.dataToRecieveFromClient;
-				closeConnection = true;
 				sendData();
 				this.server.remove(this);
 				dataToRecieveFromClient = null;
+				this.inFromClient.close();
+				this.outToClient.close();
+				this.clientSocket.close();
 			}
 
 		} catch (NullPointerException npe) {
@@ -93,7 +101,16 @@ public class ServerSideClientIO implements Runnable {
 			System.err.println("Invalid class issue recieving data server side: " + ice.getMessage());
 		} catch (SocketException se) {
 			System.err.println("Socket issue recieving data server side: " + se.getMessage());
-			this.closeConnection = true;
+			closeConnection = true;
+			this.server.remove(this);
+			dataToRecieveFromClient = null;
+			try {
+				this.inFromClient.close();
+				this.outToClient.close();
+				this.clientSocket.close();
+			} catch (IOException ioe) {
+				System.err.println("Error closing streams and sockets server side: " + ioe.getMessage());
+			}
 		} catch (IOException ioe) {
 			System.err.println("Issue recieving data server side: " + ioe.getMessage());
 			this.closeConnection = true;
@@ -107,14 +124,18 @@ public class ServerSideClientIO implements Runnable {
 	public void sendData() {
 		try {
 			this.outToClient.writeObject(this.dataToSendToClient);
+		} catch (InvalidClassException ice) {
+			System.err.println("Sending invalid class server side: " + ice.getMessage());
 		} catch (IOException ioe) {
-			System.err.println("Issue sending data server side");
+			System.err.println("Issue sending data server side: " + ioe.getMessage());
 		}
 	}
 
-	/*** 
+	/***
 	 * Sends ClypeData object to client.
-	 * @param toSendToClient A ClypeData object to send to client.
+	 * 
+	 * @param toSendToClient
+	 *            A ClypeData object to send to client.
 	 */
 	public void sendData(ClypeData toSendToClient) {
 		try {
@@ -126,16 +147,18 @@ public class ServerSideClientIO implements Runnable {
 
 	/***
 	 * Sets data to send to client
-	 * @param dataToSendToClient A ClypeData object to send to client.
+	 * 
+	 * @param dataToSendToClient
+	 *            A ClypeData object to send to client.
 	 */
 	public void setSendDataToClient(ClypeData dataToSendToClient) {
 		this.dataToSendToClient = dataToSendToClient;
 	}
 
 	/***
-	 * Broadcasts data to clients.  
+	 * Broadcasts data to clients.
 	 */
-	public void broadcastToClient() {
+	public void broadcastToClients() {
 		if (this.dataToRecieveFromClient.getType() != ClypeData.LIST_USERS) {
 			this.server.broadcast(this.dataToSendToClient); // send to all clients
 		} else {

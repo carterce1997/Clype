@@ -13,7 +13,7 @@ import java.util.Scanner;
 /**
  * A class representing the user client.
  * 
- * @author Chris
+ * @authors Chris Carter, Jared Heidt
  *
  */
 public class ClypeClient {
@@ -128,17 +128,17 @@ public class ClypeClient {
 			this.inFromStd.close();
 			socket.close();
 		} catch (BindException be) {
-			System.err.println("ClypeClient - Unable to bind a socket to a port: " + be.getMessage());
+			System.err.println("Client side - Unable to bind a socket to a port: " + be.getMessage());
 		} catch (ConnectException ce) {
-			System.err.println("ClypeClient - Unable to connect to port: " + ce.getMessage());
+			System.err.println("Client side - Unable to connect to port: " + ce.getMessage());
 		} catch (NoRouteToHostException nrthe) {
-			System.err.println("ClypeClient - No route to the host . . .");
+			System.err.println("Client side - No route to the host . . .");
 		} catch (UnknownHostException uhe) {
-			System.err.println("ClypeClient - Unknown host. . .");
+			System.err.println("Client side - Unknown host. . .");
 		} catch (SocketException se) {
-			System.err.println("ClypeClient - Socket exception: " + se.getMessage());
+			System.err.println("Client side - Socket exception: " + se.getMessage());
 		} catch (IOException ioe) {
-			System.err.println("ClypeClient - IO Exception: " + ioe.getMessage());
+			System.err.println("Client side - IO Exception: " + ioe.getMessage());
 		}
 
 	}
@@ -187,24 +187,35 @@ public class ClypeClient {
 	/**
 	 * Receives client data from the server.
 	 */
-	public boolean recieveData() {
+	public synchronized boolean recieveData() {
 		try {
 			boolean socketClosed = false;
 			// System.err.println("closeConnection: " + this.closeConnection);
 			if (!this.closeConnection) {
 				this.dataToRecieveFromServer = (ClypeData) this.inFromServer.readObject();
+
 				if (this.dataToRecieveFromServer.getType() == ClypeData.LOG_OUT) {
 					socketClosed = true;
 				}
 			} else {
 				this.dataToRecieveFromServer = null;
 			}
-			return socketClosed;
-		} catch (IOException ioe) {
-			System.err.println("closeConnection: " + this.closeConnection);
-			System.err.println("Issue recieving data client side: " + ioe.getMessage());
 
-			ioe.printStackTrace();
+			return socketClosed;
+
+		} catch(InvalidClassException ice) {
+			System.err.println("Client side - Invalid class issue recieving data : " + ice.getMessage());
+		}catch (SocketException se) {
+			System.err.println("Client side - Socket issue recieving data client side: " + se.getMessage());
+			closeConnection = true;
+			try {
+				this.outToServer.close();
+				this.inFromServer.close();
+			} catch (IOException ioe) {
+				System.err.println("Error closing streams and sockets client side: " + ioe.getMessage());
+			}
+		} catch (IOException ioe) {
+			System.err.println("Issue recieving data client side: " + ioe.getMessage());
 		} catch (ClassNotFoundException cnf) {
 			System.err.println("Class not found");
 			return false;

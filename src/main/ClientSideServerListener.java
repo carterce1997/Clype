@@ -1,10 +1,16 @@
 package main;
 
+/**
+ * 
+ * @author Jared Heidt, Chris Carter
+ *
+ */
 public class ClientSideServerListener implements Runnable {
 	private ClypeClient client;
 
 	/***
 	 * A constructor taking a ClypeClient object.
+	 * 
 	 * @param client
 	 */
 	public ClientSideServerListener(ClypeClient client) {
