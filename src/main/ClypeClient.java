@@ -13,7 +13,7 @@ import java.util.Scanner;
 /**
  * A class representing the user client.
  * 
- * @authors Chris Carter, Jared Heidt
+ * @author Chris Carter, Jared Heidt
  *
  */
 public class ClypeClient {
@@ -49,10 +49,10 @@ public class ClypeClient {
 			throw new IllegalArgumentException("Illegal port number given to ClypeClient constructor");
 		}
 		if (userName == null) {
-			throw new IllegalArgumentException("null user name given to ClypeClient constructor");
+			throw new IllegalArgumentException("Null user name given to ClypeClient constructor");
 		}
 		if (hostName == null) {
-			throw new IllegalArgumentException("null host namegiven to ClypeClient constructor");
+			throw new IllegalArgumentException("Null host namegiven to ClypeClient constructor");
 		}
 		this.userName = userName;
 		this.hostName = hostName;
@@ -94,7 +94,8 @@ public class ClypeClient {
 	}
 
 	/**
-	 * Starts the client.
+	 * This method starts the client. It connects to the server, creates a client
+	 * side listener thread, reads client data and sends it.
 	 */
 	public void start() {
 		try {
@@ -128,17 +129,17 @@ public class ClypeClient {
 			this.inFromStd.close();
 			socket.close();
 		} catch (BindException be) {
-			System.err.println("Client side - Unable to bind a socket to a port: " + be.getMessage());
+			System.err.println("Unable to bind a socket to a port: " + be.getMessage());
 		} catch (ConnectException ce) {
-			System.err.println("Client side - Unable to connect to port: " + ce.getMessage());
+			System.err.println("Unable to connect to port: " + ce.getMessage());
 		} catch (NoRouteToHostException nrthe) {
-			System.err.println("Client side - No route to the host . . .");
+			System.err.println("No route to the host . . .");
 		} catch (UnknownHostException uhe) {
-			System.err.println("Client side - Unknown host. . .");
+			System.err.println("Unknown host. . .");
 		} catch (SocketException se) {
-			System.err.println("Client side - Socket exception: " + se.getMessage());
+			System.err.println("Socket exception: " + se.getMessage());
 		} catch (IOException ioe) {
-			System.err.println("Client side - IO Exception: " + ioe.getMessage());
+			System.err.println("IO Exception: " + ioe.getMessage());
 		}
 
 	}
@@ -170,10 +171,10 @@ public class ClypeClient {
 
 			} catch (FileNotFoundException fnfe) {
 				this.dataToSendToServer = null;
-				System.err.println("Client end - File was not found while reading client data.");
+				System.err.println("File was not found while reading client data.");
 			} catch (IOException ioe) {
 				this.dataToSendToServer = null;
-				System.err.println("Client end - Input output error (exception) while reading client data.");
+				System.err.println("Input output error (exception) while reading client data.");
 			}
 		} else if (command.equals("LISTUSERS")) {
 			this.dataToSendToServer = new MessageClypeData(userName, "list users", ClypeData.LIST_USERS);
@@ -186,8 +187,11 @@ public class ClypeClient {
 
 	/**
 	 * Receives client data from the server.
+	 * 
+	 * @return A boolean which verifies whether the connection with the server is to
+	 *         be closed or not.
 	 */
-	public synchronized boolean recieveData() {
+	public boolean recieveData() {
 		try {
 			boolean socketClosed = false;
 			// System.err.println("closeConnection: " + this.closeConnection);
@@ -203,10 +207,10 @@ public class ClypeClient {
 
 			return socketClosed;
 
-		} catch(InvalidClassException ice) {
-			System.err.println("Client side - Invalid class issue recieving data : " + ice.getMessage());
-		}catch (SocketException se) {
-			System.err.println("Client side - Socket issue recieving data client side: " + se.getMessage());
+		} catch (InvalidClassException ice) {
+			System.err.println("Invalid class issue recieving data : " + ice.getMessage());
+		} catch (SocketException se) {
+			System.err.println("Socket issue recieving data client side: " + se.getMessage());
 			closeConnection = true;
 			try {
 				this.outToServer.close();
@@ -217,14 +221,14 @@ public class ClypeClient {
 		} catch (IOException ioe) {
 			System.err.println("Issue recieving data client side: " + ioe.getMessage());
 		} catch (ClassNotFoundException cnf) {
-			System.err.println("Class not found");
+			System.err.println("Error, class not found");
 			return false;
 		}
 		return false;
 	}
 
 	/**
-	 * Sends client data.
+	 * Sends client data to the server.
 	 */
 	public void sendData() {
 		try {
@@ -238,27 +242,9 @@ public class ClypeClient {
 	}
 
 	/**
-	 * Prints the client data to standard output.
+	 * Prints the received data from server to standard output.
 	 */
 	public void printData() {
-		// if ( this.dataToSendToServer != null ) {
-		// System.out.println("Data to send to server:");
-		// System.out.println("Username: " + this.dataToSendToServer.getUserName());
-		// System.out.println("Date: " + this.dataToSendToServer.getDate());
-		// System.out.println("Data: " + this.dataToSendToServer.getData());
-		// }
-		// if ( this.dataToRecieveFromServer != null ) {
-		// System.out.println("Data to recieve from server:");
-		// System.out.println("Username: " +
-		// this.dataToRecieveFromServer.getUserName());
-		// System.out.println("Date: " + this.dataToRecieveFromServer.getDate());
-		// System.out.println("Data: " + this.dataToRecieveFromServer.getData());
-		// }
-		// if (this.dataToRecieveFromServer == null && this.dataToSendToServer == null)
-		// {
-		// System.out.println( "no data" );
-		// }
-
 		if (this.dataToRecieveFromServer != null) {
 			System.out.println(this.dataToRecieveFromServer.getData());
 		}
@@ -330,10 +316,9 @@ public class ClypeClient {
 	 * created and its start() method is called.
 	 * 
 	 * @param args
-	 *            Case (i): <username> e.g., java ClypeClient Sherlock Case (ii):
-	 *            <username>@<hostname> e.g., java ClypeClient
-	 *            Sherlock@192.168.23.45 Case (iii):
-	 *            <username>@<hostname>:<portnumber> e.g., java ClypeClient
+	 *            Case (i): username e.g., java ClypeClient Sherlock Case (ii):
+	 *            username@hostname e.g., java ClypeClient Sherlock@192.168.23.45
+	 *            Case (iii): username@hostname:portnumber e.g., java ClypeClient
 	 *            Sherlock@192.168.23.45:12415
 	 */
 	public static void main(String[] args) {

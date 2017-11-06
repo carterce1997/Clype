@@ -1,6 +1,7 @@
 package main;
 
 /**
+ * This class handles the message receiving and printing of data from the server
  * 
  * @author Jared Heidt, Chris Carter
  *
@@ -12,6 +13,7 @@ public class ClientSideServerListener implements Runnable {
 	 * A constructor taking a ClypeClient object.
 	 * 
 	 * @param client
+	 *            A ClypeClient object.
 	 */
 	public ClientSideServerListener(ClypeClient client) {
 		this.client = client;
@@ -25,7 +27,8 @@ public class ClientSideServerListener implements Runnable {
 		boolean closedSocket = false;
 		while (client.connectionOpen() && !closedSocket) {
 			closedSocket = client.recieveData();
-			client.printData();
+			if (!closedSocket)
+				client.printData();
 		}
 	}
 
