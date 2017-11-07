@@ -11,7 +11,7 @@ import data.MessageClypeData;
 
 /**
  * 
- * @authors Jared Heidt, Chris Carter
+ * @author Jared Heidt, Chris Carter
  *
  */
 public class ClypeServer {
@@ -88,10 +88,12 @@ public class ClypeServer {
 	}
 
 	/**
-	 * Broadcasts data to one client
+	 * Broadcasts data to one client only
 	 * 
-	 * @param dataToBroadcastToClients
+	 * @param dataToBroadcastToClient
 	 *            message to be sent to one client only
+	 * @param client
+	 *            the client to broadcast the data to
 	 */
 	public synchronized void broadcast(ClypeData dataToBroadcastToClient, ServerSideClientIO client) {
 		if (dataToBroadcastToClient.getType() == ClypeData.LIST_USERS) {
@@ -158,7 +160,7 @@ public class ClypeServer {
 	 * 
 	 * @param args
 	 *            The argument for the port number that the server connects to.<br>
-	 *            Format for input: java ClypeServer \<portnumber\> <br>
+	 *            Format for input: java ClypeServer portnumber <br>
 	 *            Format for input: java ClypeServer 12415
 	 */
 	public static void main(String[] args) {

@@ -9,7 +9,7 @@ import data.*;
 
 /**
  * 
- * @authors Jared Heidt, Chris Carter
+ * @author Jared Heidt, Chris Carter
  *
  */
 public class ServerSideClientIO implements Runnable {
@@ -82,7 +82,7 @@ public class ServerSideClientIO implements Runnable {
 	public void recieveData() {
 		try {
 			dataToRecieveFromClient = (ClypeData) inFromClient.readObject();
-
+	
 			if (dataToRecieveFromClient.getType() == (ClypeData.LOG_OUT)) {
 				this.dataToSendToClient = this.dataToRecieveFromClient;
 				sendData();
@@ -91,8 +91,8 @@ public class ServerSideClientIO implements Runnable {
 				this.inFromClient.close();
 				this.outToClient.close();
 				this.clientSocket.close();
+				this.closeConnection = true;
 			}
-
 		} catch (NullPointerException npe) {
 			System.err.println("Null pointer issue recieving data server side: " + npe.getMessage());
 		} catch (ClassNotFoundException cnfe) {
@@ -113,8 +113,16 @@ public class ServerSideClientIO implements Runnable {
 			}
 		} catch (IOException ioe) {
 			System.err.println("Issue recieving data server side: " + ioe.getMessage());
-			this.closeConnection = true;
-			ioe.printStackTrace();
+			closeConnection = true;
+			this.server.remove(this);
+			dataToRecieveFromClient = null;
+			try {
+				this.inFromClient.close();
+				this.outToClient.close();
+				this.clientSocket.close();
+			} catch (IOException ioe2) {
+				System.err.println("Error closing streams and sockets server side: " + ioe2.getMessage());
+			}
 		}
 	}
 
