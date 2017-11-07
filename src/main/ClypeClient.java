@@ -33,6 +33,8 @@ public class ClypeClient {
 
 	private ObjectInputStream inFromServer;
 	private ObjectOutputStream outToServer;
+	
+	private Socket socket;
 
 	/**
 	 * A constructor taking the username, hostname, and port.
@@ -100,10 +102,10 @@ public class ClypeClient {
 		try {
 			this.inFromStd = new java.util.Scanner(System.in);
 			System.out.println("Attempting to connect to server.");
-			Socket socket = new Socket(this.hostName, this.port);
+			this.socket = new Socket(this.hostName, this.port);
 
 			this.outToServer = new ObjectOutputStream(socket.getOutputStream());
-			this.inFromServer = new ObjectInputStream(socket.getInputStream());
+			this.inFromServer = new ObjectInputStream(socket.getInputStream()); 
 			System.out.println("Connected to server.");
 
 			Thread listener = new Thread(new ClientSideServerListener(this));
@@ -113,8 +115,8 @@ public class ClypeClient {
 			System.out.println("Enter a message to send to other users: ");
 
 			while (!this.closeConnection) {
-				readClientData();
-				sendData();
+				this.readClientData();
+				this.sendData();
 			}
 
 			try {
@@ -187,9 +189,12 @@ public class ClypeClient {
 	/**
 	 * Receives client data from the server.
 	 */
-	public synchronized boolean recieveData() {
+	public synchronized boolean recieveData() { //PROBLEM HERE
 		try {
 			boolean socketClosed = false;
+			if (this.socket.isClosed()) {
+				return true;
+			}
 			// System.err.println("closeConnection: " + this.closeConnection);
 			if (!this.closeConnection) {
 				this.dataToRecieveFromServer = (ClypeData) this.inFromServer.readObject();
@@ -197,6 +202,8 @@ public class ClypeClient {
 				if (this.dataToRecieveFromServer.getType() == ClypeData.LOG_OUT) {
 					socketClosed = true;
 				}
+				
+				
 			} else {
 				this.dataToRecieveFromServer = null;
 			}
@@ -206,7 +213,7 @@ public class ClypeClient {
 		} catch(InvalidClassException ice) {
 			System.err.println("Client side - Invalid class issue recieving data : " + ice.getMessage());
 		}catch (SocketException se) {
-			System.err.println("Client side - Socket issue recieving data client side: " + se.getMessage());
+			System.err.println("Client side - Socket issue recieving data client side: " + se.getMessage()); // EXCEPTION
 			closeConnection = true;
 			try {
 				this.outToServer.close();
