@@ -1,5 +1,9 @@
 package application;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
+import data.ClypeData;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -13,8 +17,15 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-public class Main extends Application {
 
+
+public class Main extends Application {
+	
+	private int numLinesConvo = 10;
+	private int numLinesUsers = numLinesConvo;
+	private Queue<ClypeData> convoBuffer = new LinkedList<>();
+
+	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		try {
@@ -48,7 +59,7 @@ public class Main extends Application {
 			
 			// list of messages
 			TextArea convoOutput = new TextArea(); // input box
-			convoOutput.setPrefRowCount(10);
+			convoOutput.setPrefRowCount( this.numLinesConvo );
 			convoOutput.setText("User1: Some text \nUser2: Some more text");
 			convoOutput.setWrapText(true);
 			convoOutput.setEditable(false);
@@ -70,7 +81,7 @@ public class Main extends Application {
 			
 			// list of users
 			TextArea usersList = new TextArea(); 
-			usersList.setPrefRowCount(10);
+			usersList.setPrefRowCount( this.numLinesUsers );
 			usersList.setText("User1 \nUser2");
 			usersList.setWrapText(true);
 			usersList.setMaxWidth(100);
@@ -124,15 +135,27 @@ public class Main extends Application {
 			sendMessageBox.getChildren().addAll(sendMessageBoxLabel, sendMessageBoxControls);
 			root.setBottom(sendMessageBox);
 
-			
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
+	public String getBufferString() {
+		String outputString = "";
+		for (ClypeData cd : this.convoBuffer) {
+			outputString += "\n" + cd.getData();
+		}
+		
+		return outputString;
+	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) {		
+		
 		launch(args);
 	}
+	
+	
+	
 }
