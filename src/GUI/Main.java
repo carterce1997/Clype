@@ -18,67 +18,101 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		try {
+			/*
+			 * create root
+			 */
 			BorderPane root = new BorderPane();
 			Scene scene = new Scene(root, 400, 400);
 
-			// Title
-			VBox titleVBox = new VBox();
-			root.setTop(titleVBox);
+			/*
+			 * title 
+			 */
 			
+			// label
 			Label titleLabel = new Label("Clype 2.0");
 			titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 25));
-			titleVBox.getChildren().addAll(titleLabel);
 
-			// Conversation
-			VBox convoBox = new VBox();
-			root.setCenter(convoBox);
+			// add to root
+			VBox titleVBox = new VBox();
+			titleVBox.getChildren().addAll(titleLabel);
+			root.setTop(titleVBox);
 			
+			
+			/*
+			 * Conversation display
+			 */
+			
+			// label
 			Label convoBoxLabel = new Label("Message Window");
 			
+			// list of messages
 			TextArea convoOutput = new TextArea(); // input box
 			convoOutput.setPrefRowCount(10);
 			convoOutput.setText("User1: Some text \nUser2: Some more text");
 			convoOutput.setWrapText(true);
-			
+			convoOutput.setEditable(false);
+
+			// add to root
+			VBox convoBox = new VBox();
 			convoBox.getChildren().addAll(convoBoxLabel, convoOutput);
+			root.setCenter(convoBox);
 			
-			// Users list
-			VBox usersBox = new VBox();
-			root.setRight(usersBox);
 			
-			Label usersBoxLabel = new Label("Users Window"); // VBox label
+			/*
+			 * List users box
+			 */
 			
-			TextArea usersList = new TextArea(); // input box
+			// label
+			Label usersBoxLabel = new Label("Users Window");
+			
+			// list of users
+			TextArea usersList = new TextArea(); 
 			usersList.setPrefRowCount(10);
 			usersList.setText("User1 \nUser2");
 			usersList.setWrapText(true);
 			usersList.setMaxWidth(100);
+			usersList.setEditable(false);
 			
+			// add to root
+			VBox usersBox = new VBox();
 			usersBox.getChildren().addAll(usersBoxLabel, usersList);
+			root.setRight(usersBox);
 			
-			// Send message
-			VBox sendMessageBox = new VBox();
-			root.setBottom(sendMessageBox);
 			
-			Label sendMessageBoxLabel = new Label("Send Message Window"); // VBox label
+			/*
+			 * Send message
+			 */
 			
-			HBox sendMessageBoxControls = new HBox();
+			// label
+			Label sendMessageBoxLabel = new Label("Send Message Window"); 
 			
+			// input box
 			TextArea messageInput = new TextArea(); // input box
 			messageInput.setPrefRowCount(2);
 			messageInput.setText("Some text");
 			messageInput.setWrapText(true);
 			messageInput.setMaxWidth(200);
 			
+			// buttons
+			HBox sendMessageButtons = new HBox();
 			
-			Button sendMessageButton = new Button();// send message button
+			Button sendMessageButton = new Button();
 			sendMessageButton.setText("Send Message");
 			
-			Button sendMedia = new Button();// send media button
-			sendMedia.setText("Send Media");
+			Button sendMediaButton = new Button();
+			sendMediaButton.setText("Send Media");
 			
-			sendMessageBoxControls.getChildren().addAll(messageInput, sendMessageButton, sendMedia);
+			sendMessageButtons.getChildren().addAll(sendMessageButton, sendMediaButton);
+			 
+			// all send message controls
+			HBox sendMessageBoxControls = new HBox();
+			sendMessageBoxControls.getChildren().addAll(messageInput, sendMessageButtons);
+			
+			// add controls to root
+			VBox sendMessageBox = new VBox();
 			sendMessageBox.getChildren().addAll(sendMessageBoxLabel, sendMessageBoxControls);
+			root.setBottom(sendMessageBox);
+
 			
 			primaryStage.setScene(scene);
 			primaryStage.show();
