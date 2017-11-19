@@ -51,6 +51,8 @@ public class Main extends Application {
 			convoOutput.setText("User1: Some text \nUser2: Some more text");
 			convoOutput.setWrapText(true);
 			convoOutput.setEditable(false);
+			convoOutput.setMaxHeight(300);
+			convoOutput.setMinHeight(300);
 
 			// add to root
 			VBox convoBox = new VBox();
@@ -72,6 +74,9 @@ public class Main extends Application {
 			usersList.setWrapText(true);
 			usersList.setMaxWidth(100);
 			usersList.setEditable(false);
+			usersList.setMaxHeight(300);
+			usersList.setMinHeight(300);
+
 			
 			// add to root
 			VBox usersBox = new VBox();
@@ -92,6 +97,7 @@ public class Main extends Application {
 			messageInput.setText("Some text");
 			messageInput.setWrapText(true);
 			messageInput.setMaxWidth(200);
+
 			
 			// buttons
 			HBox sendMessageButtons = new HBox();
