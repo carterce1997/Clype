@@ -21,11 +21,6 @@ import javafx.scene.text.FontWeight;
 
 public class Main extends Application {
 	
-	private int numLinesConvo = 10;
-	private int numLinesUsers = numLinesConvo;
-	private Queue<ClypeData> convoBuffer = new LinkedList<>();
-
-	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		try {
@@ -59,7 +54,7 @@ public class Main extends Application {
 			
 			// list of messages
 			TextArea convoOutput = new TextArea(); // input box
-			convoOutput.setPrefRowCount( this.numLinesConvo );
+			convoOutput.setPrefRowCount( 10 );
 			convoOutput.setText("User1: Some text \nUser2: Some more text");
 			convoOutput.setWrapText(true);
 			convoOutput.setEditable(false);
@@ -81,7 +76,7 @@ public class Main extends Application {
 			
 			// list of users
 			TextArea usersList = new TextArea(); 
-			usersList.setPrefRowCount( this.numLinesUsers );
+			usersList.setPrefRowCount( 10 );
 			usersList.setText("User1 \nUser2");
 			usersList.setWrapText(true);
 			usersList.setMaxWidth(100);
@@ -138,16 +133,13 @@ public class Main extends Application {
 		}
 	}
 	
-	public String getBufferString() {
-		String outputString = "";
-		for (ClypeData cd : this.convoBuffer) {
-			outputString += "\n" + cd.getData();
-		}
-		
-		return outputString;
-	}
+	
 
 	public static void main(String[] args) {		
+		int numLinesConvo = 10;
+		int numLinesUsers = numLinesConvo;
+		
+		ConvoBuffer convoBuffer = new ConvoBuffer( numLinesConvo );
 		
 		launch(args);
 	}
