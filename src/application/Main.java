@@ -111,9 +111,13 @@ public class Main extends Application {
 			
 			Button sendMessageButton = new Button();
 			sendMessageButton.setText("Send Message");
+			SendTextButtonHandler messageButtonHandler = new SendTextButtonHandler();
+			sendMessageButton.setOnMouseReleased(messageButtonHandler);
 			
 			Button sendMediaButton = new Button();
 			sendMediaButton.setText("Send Media");
+			SendTextButtonHandler mediaButtonHandler = new SendTextButtonHandler();
+			sendMediaButton.setOnMouseReleased(mediaButtonHandler);
 			
 			sendMessageButtons.getChildren().addAll(sendMessageButton, sendMediaButton);
 			 
