@@ -19,7 +19,7 @@ public class SendTextButtonHandler implements EventHandler<MouseEvent> {
 	@Override
 	public void handle(MouseEvent event) {
 		if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
-				client.readClientData(messageInput.getText());
+				client.readClientData();
 				client.sendData();
 				messageInput.clear();
 				System.out.println("Hello World");
