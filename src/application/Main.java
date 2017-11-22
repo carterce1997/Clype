@@ -5,8 +5,11 @@ import java.util.Queue;
 
 import data.ClypeData;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import main.ClypeClient;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -30,15 +33,20 @@ public class Main extends Application {
 			 * create root
 			 */
 			BorderPane root = new BorderPane();
-			Scene scene = new Scene(root, 400, 400);
+			Scene scene = new Scene(root, 800, 800);
 			scene.getStylesheets().add(getClass().getResource("stylesheet.css").toExternalForm());
-		
+
+			/*
+			 * create ClypeClient
+			 */
+
+
 			/*
 			 * title
 			 */
 
 			// label
-			Label titleLabel = new Label("Clype 2.0");
+			Label titleLabel = new Label(" Clype 2.0");
 			titleLabel.setId("app-title");
 
 			// add to root
@@ -53,7 +61,6 @@ public class Main extends Application {
 			// label
 			Label convoBoxLabel = new Label("Message Window");
 			convoBoxLabel.setId("convo-box-label");
-
 
 			// list of messages
 			TextArea convoOutput = new TextArea(); // input box
@@ -96,13 +103,23 @@ public class Main extends Application {
 			root.setRight(usersBox);
 
 			/*
-			 * Send message
+			 * Box for sending messages
 			 */
 
 			// label
-			Label sendMessageBoxLabel = new Label("Send Message Window");
+			Label sendMessageBoxLabel = new Label("  Send Message Window");
 			sendMessageBoxLabel.setId("send-message-box-label");
-			
+
+			// VBox for spacing on left
+			VBox leftSpacing = new VBox();
+			leftSpacing.setMaxWidth(10);
+			leftSpacing.setMinWidth(10);
+
+			// VBox for spacing on right
+			VBox rightSpacing = new VBox();
+			rightSpacing.setMaxWidth(10);
+			rightSpacing.setMinWidth(10);
+
 			// user input box
 			TextArea messageInput = new TextArea(); // input box
 			messageInput.setPrefRowCount(4);
@@ -112,38 +129,59 @@ public class Main extends Application {
 			MessageInputHandler messageHandler = new MessageInputHandler(messageInput);
 			messageInput.setOnMouseClicked(messageHandler);
 
-			// buttons to send messages and media
+			// button to send message
 			Button sendMessageButton = new Button("Send Message");
 			sendMessageButton.setMinSize(63, 100);
 			sendMessageButton.setWrapText(true);
 			sendMessageButton.setTextAlignment(TextAlignment.CENTER);
-			SendTextButtonHandler messageButtonHandler = new SendTextButtonHandler();
+			SendTextButtonHandler messageButtonHandler = new SendTextButtonHandler(messageInput);
 			sendMessageButton.setOnMouseReleased(messageButtonHandler);
 
+			// button to send media
 			Button sendMediaButton = new Button("Send Media");
 			sendMediaButton.setMinSize(55, 100);
 			sendMediaButton.setWrapText(true);
 			sendMediaButton.setTextAlignment(TextAlignment.CENTER);
-			SendTextButtonHandler mediaButtonHandler = new SendTextButtonHandler();
+			SendMediaButtonHandler mediaButtonHandler = new SendMediaButtonHandler();
 			sendMediaButton.setOnMouseReleased(mediaButtonHandler);
 
+			// HBox to hold both buttons with
 			HBox sendMessageButtons = new HBox();
 			sendMessageButtons.getChildren().addAll(sendMessageButton, sendMediaButton);
+
+			// HBox for all sending message controls
+			HBox sendMessageBoxControls = new HBox();
 			HBox.setHgrow(messageInput, Priority.ALWAYS);
 			HBox.setHgrow(sendMediaButton, Priority.ALWAYS);
 			HBox.setHgrow(sendMessageButton, Priority.ALWAYS);
+			sendMessageBoxControls.getChildren().addAll(leftSpacing, messageInput, sendMessageButtons, rightSpacing);
 
-			// box for all sending message controls
-			HBox sendMessageBoxControls = new HBox();
-			sendMessageBoxControls.getChildren().addAll(messageInput, sendMessageButtons);
+			/*
+			 * set spacing between message receiving box and message sending box
+			 */
+			HBox topSpacer = new HBox();
+			topSpacer.setMaxHeight(10);
+			topSpacer.setMinHeight(10);
+			HBox bottomSpacer = new HBox();
+			bottomSpacer.setMaxHeight(10);
+			bottomSpacer.setMinHeight(10);
 
 			// add message controls to root
 			VBox sendMessageBox = new VBox();
-			sendMessageBox.getChildren().addAll(sendMessageBoxLabel, sendMessageBoxControls);
+			sendMessageBox.getChildren().addAll(topSpacer, sendMessageBoxLabel, sendMessageBoxControls, bottomSpacer);
 			root.setBottom(sendMessageBox);
+
+			/*
+			 * Spacer for left side of border pane
+			 */
+			VBox leftSpacer = new VBox();
+			leftSpacer.setMaxWidth(10);
+			leftSpacer.setMinWidth(10);
+			root.setLeft(leftSpacer);
 
 			primaryStage.setScene(scene);
 			primaryStage.show();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -154,12 +192,10 @@ public class Main extends Application {
 		for (ClypeData cd : this.convoBuffer) {
 			outputString += "\n" + cd.getData();
 		}
-
 		return outputString;
 	}
 
 	public static void main(String[] args) {
-
 		launch(args);
 	}
 
