@@ -1,4 +1,4 @@
-# Clype 1.0
+# Clype 2.0
 # Authors: Jared Heidt, Chris Carter
 
 Test edit.
