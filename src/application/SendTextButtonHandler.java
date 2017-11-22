@@ -23,7 +23,6 @@ public class SendTextButtonHandler implements EventHandler<MouseEvent> {
 				client.sendData();
 				messageInput.clear();
 				System.out.println("Hello World");
-
 		}
 	}
 
