@@ -15,7 +15,7 @@ public class MessageInputHandler implements EventHandler<MouseEvent> {
 	public void handle(MouseEvent event) {
 		if (event.getEventType() == MouseEvent.MOUSE_CLICKED) {
 			if (userInputBox.getText().equals("Enter your message here...")) {
-				userInputBox.setText("");
+				userInputBox.clear();
 			}
 		}
 	}

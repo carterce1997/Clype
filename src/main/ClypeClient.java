@@ -34,6 +34,9 @@ public class ClypeClient {
 	private ObjectInputStream inFromServer;
 	private ObjectOutputStream outToServer;
 
+	private Thread listener;
+	private Socket socket;
+
 	/**
 	 * A constructor taking the username, hostname, and port.
 	 * 
@@ -59,6 +62,33 @@ public class ClypeClient {
 		this.port = port;
 		this.inFromServer = null;
 		this.outToServer = null;
+
+		try {
+			System.out.println("Attempting to connect to server.");
+			socket = new Socket(this.hostName, this.port);
+
+			this.outToServer = new ObjectOutputStream(socket.getOutputStream());
+			this.inFromServer = new ObjectInputStream(socket.getInputStream());
+			System.out.println("Connected to server.");
+
+			/*
+			 * listener = new Thread(new ClientSideServerListener(this)); listener.start();
+			 */
+			sendUserName();
+
+		} catch (BindException be) {
+			System.err.println("Unable to bind a socket to a port: " + be.getMessage());
+		} catch (ConnectException ce) {
+			System.err.println("Unable to connect to port: " + ce.getMessage());
+		} catch (NoRouteToHostException nrthe) {
+			System.err.println("No route to the host . . .");
+		} catch (UnknownHostException uhe) {
+			System.err.println("Unknown host. . .");
+		} catch (SocketException se) {
+			System.err.println("Socket exception: " + se.getMessage());
+		} catch (IOException ioe) {
+			System.err.println("IO Exception: " + ioe.getMessage());
+		}
 	}
 
 	/**
@@ -99,7 +129,6 @@ public class ClypeClient {
 	 */
 	public void start() {
 		try {
-			this.inFromStd = new java.util.Scanner(System.in);
 			System.out.println("Attempting to connect to server.");
 			Socket socket = new Socket(this.hostName, this.port);
 
@@ -107,18 +136,18 @@ public class ClypeClient {
 			this.inFromServer = new ObjectInputStream(socket.getInputStream());
 			System.out.println("Connected to server.");
 
-			Thread listener = new Thread(new ClientSideServerListener(this));
+			listener = new Thread(new ClientSideServerListener(this));
 			listener.start();
 
 			sendUserName();
 			System.out.println("Enter a message to send to other users: ");
 
 			while (!this.closeConnection) {
-				readClientData();
-				sendData();
+
 			}
 
 			try {
+				wait();
 				listener.join();
 			} catch (InterruptedException ie) {
 				System.err.println(ie.getMessage());
@@ -126,7 +155,6 @@ public class ClypeClient {
 
 			this.outToServer.close();
 			this.inFromServer.close();
-			this.inFromStd.close();
 			socket.close();
 		} catch (BindException be) {
 			System.err.println("Unable to bind a socket to a port: " + be.getMessage());
@@ -155,34 +183,8 @@ public class ClypeClient {
 	/**
 	 * Reads client data from standard input.
 	 */
-	public void readClientData() {
-		String command = this.inFromStd.next();
-		if (command.equals("DONE")) {
-			System.out.println("Closing connection ");
-			this.dataToSendToServer = new MessageClypeData(userName, "LOG OUT", ClypeData.LOG_OUT);
-			this.closeConnection = true;
-			this.inFromStd.close();
-		} else if (command.equals("SENDFILE")) {
-
-			String fileName = this.inFromStd.next().toString();
-			try {
-				this.dataToSendToServer = new FileClypeData(userName, fileName, ClypeData.SEND_FILE);
-				((FileClypeData) (this.dataToSendToServer)).readFileContents();
-
-			} catch (FileNotFoundException fnfe) {
-				this.dataToSendToServer = null;
-				System.err.println("File was not found while reading client data.");
-			} catch (IOException ioe) {
-				this.dataToSendToServer = null;
-				System.err.println("Input output error (exception) while reading client data.");
-			}
-		} else if (command.equals("LISTUSERS")) {
-			this.dataToSendToServer = new MessageClypeData(userName, "list users", ClypeData.LIST_USERS);
-		} else {
-			String message = this.userName + ": " + command + this.inFromStd.nextLine();
-			this.dataToSendToServer = new MessageClypeData(userName, message, ClypeData.SEND_MESSAGE);
-		}
-
+	public void readClientData(String message) {
+		this.dataToSendToServer = new MessageClypeData(userName, message, ClypeData.SEND_MESSAGE);
 	}
 
 	/**
@@ -242,10 +244,45 @@ public class ClypeClient {
 
 	/**
 	 * Prints the received data from server to standard output.
+	 * 
+	 * @return
 	 */
-	public void printData() {
-		if (this.dataToRecieveFromServer != null) {
-			System.out.println(this.dataToRecieveFromServer.getData());
+	public synchronized ClypeData getData() {
+		if (dataToRecieveFromServer != null) {
+			return dataToRecieveFromServer;
+		} else {
+			return null;
+		}
+	}
+
+	public synchronized void setCloseConnection() {
+		this.closeConnection = true;
+		this.dataToSendToServer = new MessageClypeData(this.userName, "LOGOUT", ClypeData.LOG_OUT);
+		sendData();
+
+		/*try {
+			listener.join();
+		} catch (InterruptedException ie) {
+			System.err.println(ie.getMessage());
+		}*/
+
+		try {
+			this.outToServer.close();
+			this.inFromServer.close();
+			socket.close();
+			System.out.println("Disconnected from server.");
+		} catch (BindException be) {
+			System.err.println("Unable to bind a socket to a port: " + be.getMessage());
+		} catch (ConnectException ce) {
+			System.err.println("Unable to connect to port: " + ce.getMessage());
+		} catch (NoRouteToHostException nrthe) {
+			System.err.println("No route to the host . . .");
+		} catch (UnknownHostException uhe) {
+			System.err.println("Unknown host. . .");
+		} catch (SocketException se) {
+			System.err.println("Socket exception: " + se.getMessage());
+		} catch (IOException ioe) {
+			System.err.println("IO Exception: " + ioe.getMessage());
 		}
 	}
 

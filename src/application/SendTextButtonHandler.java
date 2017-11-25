@@ -10,8 +10,8 @@ public class SendTextButtonHandler implements EventHandler<MouseEvent> {
 	private ClypeClient client;
 	private TextArea messageInput;
 
-	public SendTextButtonHandler(/*ClypeClient client,*/ TextArea messageInput) {
-		//this.client = client;
+	public SendTextButtonHandler(ClypeClient client, TextArea messageInput) {
+		this.client = client;
 		this.messageInput = messageInput;
 
 	}
@@ -19,10 +19,9 @@ public class SendTextButtonHandler implements EventHandler<MouseEvent> {
 	@Override
 	public void handle(MouseEvent event) {
 		if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
-				client.readClientData();
-				client.sendData();
-				messageInput.clear();
-				System.out.println("Hello World");
+			client.readClientData(messageInput.getText());
+			client.sendData();
+			messageInput.clear();
 		}
 	}
 
