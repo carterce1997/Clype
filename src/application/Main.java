@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -29,10 +30,86 @@ public class Main extends Application {
 	private int numLinesUsers = numLinesConvo;
 	private Queue<ClypeData> convoBuffer = new LinkedList<>();
 	private ClypeClient client;
-
-	@Override
-	public void start(Stage primaryStage) throws Exception {
+	
+	public void showLoginWindow(Stage primaryStage) {
+		
 		try {
+			/*
+			 * create root
+			 */
+			BorderPane root = new BorderPane();
+			Scene scene = new Scene(root, 300, 200);
+			scene.getStylesheets().add(getClass().getResource("stylesheet.css").toExternalForm());
+			
+			/*
+			 * title
+			 */
+			
+			// label
+			Label titleLabel = new Label(" Clype 2.0 Login");
+			titleLabel.setId("login-title");
+
+			// add to root
+			VBox titleVBox = new VBox();
+			titleVBox.getChildren().addAll(titleLabel);
+			root.setTop(titleVBox);
+			
+
+			/*
+			 * credentials input
+			 */
+			
+			// username
+			Label usernameLabel = new Label("Username:");
+			TextField usernameInput = new TextField();
+			HBox usernameHBox = new HBox();
+			usernameHBox.getChildren().addAll(usernameLabel, usernameInput);
+			
+			// ip
+			Label ipLabel = new Label("IP:"); // this will default to the client computer's IP in the future
+			TextField ipInput = new TextField();
+			ipInput.setText("209.99.195.87");
+			HBox ipHBox = new HBox();
+			ipHBox.getChildren().addAll(ipLabel, ipInput);
+			
+			// port
+			Label portLabel = new Label("Port:"); // this will default to the client computer's IP in the future
+			TextField portInput = new TextField();
+			portInput.setText("7000");
+			HBox portHBox = new HBox();
+			portHBox.getChildren().addAll(portLabel, portInput);
+			
+			// add to root
+			VBox credentialsVBox = new VBox();
+			credentialsVBox.getChildren().addAll(usernameHBox, ipHBox, portHBox);
+			root.setCenter(credentialsVBox);
+			
+			/*
+			 * login
+			 */
+			
+			// button
+			Button login = new Button("Log in");
+			
+			// add to root
+			root.setBottom(login);
+			
+			
+			primaryStage.setScene(scene);
+			primaryStage.show();
+			
+			
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	
+	public void showMainWindow(Stage primaryStage) {
+		try {
+
 			/*
 			 * create root
 			 */
@@ -54,7 +131,7 @@ public class Main extends Application {
 			};
 			Thread sendMessagethread = new Thread(createClientTask);
 			sendMessagethread.start();
-
+			
 			/*
 			 * title
 			 */
@@ -230,17 +307,24 @@ public class Main extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.show();
 
-			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-				@Override
-				public void handle(WindowEvent arg0) {
-					client.setCloseConnection();
-				}
-
-			});
+//			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+//				@Override
+//				public void handle(WindowEvent arg0) {
+//					client.setCloseConnection();
+//				}
+//			});
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		showLoginWindow(primaryStage);
+		
+//		showMainWindow(primaryStage);
+
 	}
 
 	public static void main(String[] args) {
