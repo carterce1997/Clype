@@ -194,7 +194,6 @@ public class ClypeClient {
 	public boolean recieveData() {
 		try {
 			boolean socketClosed = false;
-			// System.err.println("closeConnection: " + this.closeConnection);
 			if (!this.closeConnection) {
 				this.dataToRecieveFromServer = (ClypeData) this.inFromServer.readObject();
 
