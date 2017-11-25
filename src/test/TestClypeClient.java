@@ -34,7 +34,7 @@ public class TestClypeClient {
 //		System.out.println(client.hashCode());
 		
 		// test 
-		client.start();
-		client.printData();
+	//	client.start();
+	//	client.printData();
 	}
 }

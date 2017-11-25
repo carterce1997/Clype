@@ -5,6 +5,7 @@ import java.util.Queue;
 
 import data.ClypeData;
 import javafx.application.Application;
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
@@ -18,6 +19,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 
 public class Main extends Application {
@@ -25,6 +28,7 @@ public class Main extends Application {
 	private int numLinesConvo = 10;
 	private int numLinesUsers = numLinesConvo;
 	private Queue<ClypeData> convoBuffer = new LinkedList<>();
+	private ClypeClient client;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -33,13 +37,22 @@ public class Main extends Application {
 			 * create root
 			 */
 			BorderPane root = new BorderPane();
-			Scene scene = new Scene(root, 800, 800);
+			Scene scene = new Scene(root, 900, 800);
 			scene.getStylesheets().add(getClass().getResource("stylesheet.css").toExternalForm());
 
 			/*
 			 * create ClypeClient
 			 */
+			Task<Void> createClientTask = new Task<Void>() {
+				@Override
+				protected Void call() throws Exception {
+					client = new ClypeClient(System.getProperty("user.name"), "localhost", 7000);
+					return null;
+				}
 
+			};
+			Thread sendMessagethread = new Thread(createClientTask);
+			sendMessagethread.start();
 
 			/*
 			 * title
@@ -62,13 +75,43 @@ public class Main extends Application {
 			Label convoBoxLabel = new Label("Message Window");
 			convoBoxLabel.setId("convo-box-label");
 
-			// list of messages
-			TextArea convoOutput = new TextArea(); // input box
+			// list of incoming messages
+			TextArea convoOutput = new TextArea(); // messages from users box
 			convoOutput.setPrefRowCount(this.numLinesConvo);
-			convoOutput.setText("User1: Some text \nUser2: Some more text");
+			convoOutput.clear();
 			convoOutput.setWrapText(true);
 			convoOutput.setEditable(false);
 			convoOutput.setMinHeight(200);
+			convoOutput.setText("Messages from other users will appear here!");
+			convoOutput.setFont(Font.font("Arial", FontWeight.LIGHT, 20));
+
+			Task<Void> incomingMessageTask = new Task<Void>() {
+				@Override
+				protected Void call() throws Exception {
+					boolean noMessages = true;// used to handle default text
+					boolean closedSocket = false;
+					while (client.connectionOpen() && !closedSocket) {
+						closedSocket = client.recieveData();
+						ClypeData messageFromServer = client.getData();
+						String username = messageFromServer.getUserName();
+						String message = messageFromServer.getData();
+						
+						if (!closedSocket) {
+							if (noMessages) {
+								convoOutput.clear();
+								noMessages = false;
+								convoOutput.setText(username + ": " + message);
+							} else {
+								convoOutput.setText(convoOutput.getText() + System.getProperty("line.separator")
+										+ username + ": " + message);
+							}
+						}
+					}
+					return null;
+				}
+			};
+			Thread recieveMessageThread = new Thread(incomingMessageTask);
+			recieveMessageThread.start();
 
 			// add convoBox to root
 			VBox convoBox = new VBox();
@@ -126,27 +169,31 @@ public class Main extends Application {
 			messageInput.setText("Enter your message here...");
 			messageInput.setWrapText(true);
 			messageInput.setStyle("-fx-background-color: transparent");
+			messageInput.setFont(Font.font("Arial", FontWeight.LIGHT, 18));
 			MessageInputHandler messageHandler = new MessageInputHandler(messageInput);
 			messageInput.setOnMouseClicked(messageHandler);
 
 			// button to send message
 			Button sendMessageButton = new Button("Send Message");
-			sendMessageButton.setMinSize(63, 100);
+			sendMessageButton.setMinSize(63, 150);
 			sendMessageButton.setWrapText(true);
 			sendMessageButton.setTextAlignment(TextAlignment.CENTER);
-			SendTextButtonHandler messageButtonHandler = new SendTextButtonHandler(messageInput);
+			sendMessageButton.setFont(Font.font("Arial", FontWeight.BOLD, 15));
+			SendTextButtonHandler messageButtonHandler = new SendTextButtonHandler(client, messageInput);
 			sendMessageButton.setOnMouseReleased(messageButtonHandler);
 
 			// button to send media
 			Button sendMediaButton = new Button("Send Media");
-			sendMediaButton.setMinSize(55, 100);
+			sendMediaButton.setMinSize(55, 150);
 			sendMediaButton.setWrapText(true);
 			sendMediaButton.setTextAlignment(TextAlignment.CENTER);
+			sendMediaButton.setFont(Font.font("Arial", FontWeight.BOLD, 15));
 			SendMediaButtonHandler mediaButtonHandler = new SendMediaButtonHandler();
 			sendMediaButton.setOnMouseReleased(mediaButtonHandler);
 
 			// HBox to hold both buttons with
 			HBox sendMessageButtons = new HBox();
+			sendMessageButtons.setCenterShape(true);
 			sendMessageButtons.getChildren().addAll(sendMessageButton, sendMediaButton);
 
 			// HBox for all sending message controls
@@ -181,7 +228,15 @@ public class Main extends Application {
 
 			primaryStage.setScene(scene);
 			primaryStage.show();
-			
+
+			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+				@Override
+				public void handle(WindowEvent arg0) {
+					client.setCloseConnection();
+				}
+
+			});
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

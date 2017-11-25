@@ -27,8 +27,9 @@ public class ClientSideServerListener implements Runnable {
 		boolean closedSocket = false;
 		while (client.connectionOpen() && !closedSocket) {
 			closedSocket = client.recieveData();
-			if (!closedSocket)
-				client.printData();
+			if (!closedSocket) {
+	//			client.printData();
+			}
 		}
 	}
 
