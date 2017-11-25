@@ -25,6 +25,7 @@ public class Main extends Application {
 	private int numLinesConvo = 10;
 	private int numLinesUsers = numLinesConvo;
 	private Queue<ClypeData> convoBuffer = new LinkedList<>();
+	private ClypeClient client;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -39,7 +40,8 @@ public class Main extends Application {
 			/*
 			 * create ClypeClient
 			 */
-
+			client = new ClypeClient();
+			
 
 			/*
 			 * title
@@ -185,14 +187,6 @@ public class Main extends Application {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	public String getBufferString() {
-		String outputString = "";
-		for (ClypeData cd : this.convoBuffer) {
-			outputString += "\n" + cd.getData();
-		}
-		return outputString;
 	}
 
 	public static void main(String[] args) {
