@@ -90,6 +90,8 @@ public class Main extends Application {
 			
 			// button
 			Button login = new Button("Log in");
+			LoginButtonHandler loginButtonHandler = new LoginButtonHandler(client, usernameInput, ipInput, portInput);
+			login.setOnMouseReleased(loginButtonHandler);
 			
 			// add to root
 			root.setBottom(login);
@@ -105,7 +107,6 @@ public class Main extends Application {
 			e.printStackTrace();
 		}
 	}
-
 	
 	public void showMainWindow(Stage primaryStage) {
 		try {
@@ -121,16 +122,16 @@ public class Main extends Application {
 			 * create ClypeClient
 			 */
 			
-			Task<Void> createClientTask = new Task<Void>() {
-				@Override
-				protected Void call() throws Exception {
-					client = new ClypeClient(System.getProperty("user.name"), "localhost", 7000);
-					return null;
-				}
-
-			};
-			Thread sendMessagethread = new Thread(createClientTask);
-			sendMessagethread.start();
+//			Task<Void> createClientTask = new Task<Void>() {
+//				@Override
+//				protected Void call() throws Exception {
+//					client = new ClypeClient(System.getProperty("user.name"), "localhost", 7000);
+//					return null;
+//				}
+//
+//			};
+//			Thread sendMessagethread = new Thread(createClientTask);
+//			sendMessagethread.start();
 			
 			/*
 			 * title
