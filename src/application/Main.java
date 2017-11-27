@@ -1,9 +1,6 @@
 package application;
 
 import java.net.InetAddress;
-import java.util.LinkedList;
-import java.util.Queue;
-
 import data.ClypeData;
 import javafx.application.Application;
 import javafx.concurrent.Task;
@@ -121,6 +118,8 @@ public class Main extends Application {
 				}
 			});	
 			
+			
+			// show
 			primaryStage.setScene(scene);
 			primaryStage.show();
 			
@@ -256,8 +255,21 @@ public class Main extends Application {
 			messageInput.setWrapText(true);
 			messageInput.setStyle("-fx-background-color: transparent");
 			messageInput.setFont(Font.font("Arial", FontWeight.LIGHT, 18));
-			MessageInputHandler messageHandler = new MessageInputHandler(messageInput);
-			messageInput.setOnMouseClicked(messageHandler);
+//			MessageInputHandler messageHandler = new MessageInputHandler(messageInput);
+//			messageInput.setOnMouseClicked(messageHandler);
+			
+			// message input handler: when clicked, message input box clears
+			messageInput.setOnMouseClicked(new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent event) {
+					if (event.getEventType() == MouseEvent.MOUSE_CLICKED) {
+						if (messageInput.getText().equals("Enter your message here...")) {
+							messageInput.clear();
+						}
+					}
+				}
+				
+			});
 
 			// button to send message
 			Button sendMessageButton = new Button("Send Message");
@@ -267,7 +279,7 @@ public class Main extends Application {
 			sendMessageButton.setFont(Font.font("Arial", FontWeight.BOLD, 15));
 			SendTextButtonHandler messageButtonHandler = new SendTextButtonHandler(client, messageInput);
 			sendMessageButton.setOnMouseReleased(messageButtonHandler);
-
+	
 			// button to send media
 			Button sendMediaButton = new Button("Send Media");
 			sendMediaButton.setMinSize(55, 150);
