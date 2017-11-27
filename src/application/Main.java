@@ -48,11 +48,11 @@ public class Main extends Application {
 			 * title
 			 */
 			
-			// label
+			// title text
 			Label titleLabel = new Label(" Clype 2.0 Login");
 			titleLabel.setId("login-title");
 
-			// add to root
+			// add title to root
 			VBox titleVBox = new VBox();
 			titleVBox.getChildren().addAll(titleLabel);
 			root.setTop(titleVBox);
@@ -62,14 +62,14 @@ public class Main extends Application {
 			 * credentials input
 			 */
 			
-			// inputs
+			// credential input fields
 			TextField usernameInput = new TextField();
 			TextField hostnameInput = new TextField();
 			hostnameInput.setText(InetAddress.getLocalHost().getHostAddress());
 			TextField portInput = new TextField();
 			portInput.setText( Integer.toString(DEFAULT_PORT) );
 			
-			// add to root
+			// add fields to root
 			VBox credentialsVBox = new VBox();
 			credentialsVBox.getChildren().addAll(usernameInput, hostnameInput, portInput);
 			root.setCenter(credentialsVBox);
@@ -78,7 +78,7 @@ public class Main extends Application {
 			 * credentials labels
 			 */
 			
-			// labels
+			// credential labels
 			Label usernameLabel = new Label("Username:");
 			Label hostnameLabel = new Label("Hostname:"); // this will default to the client computer's IP in the future
 			Label portLabel = new Label("Port:"); 
@@ -86,20 +86,20 @@ public class Main extends Application {
 			VBox credentialsLabels = new VBox();
 			credentialsLabels.getChildren().addAll(usernameLabel, hostnameLabel, portLabel);
 			
-			// add to root
+			// add labels to root
 			root.setLeft(credentialsLabels);
 			
 			/*
 			 * login controls
 			 */
 			
-			// button
+			// login button
 			Button login = new Button("Log in");				
 			
-			// add to root
+			// add button to root
 			root.setBottom(login);
 			
-			// login handler
+			// login button handler: creates new client and shows main window
 			login.setOnMouseReleased(new EventHandler<MouseEvent>() {
 				public void handle(MouseEvent event) {
 					try {
