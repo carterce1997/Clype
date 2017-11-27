@@ -1,5 +1,6 @@
 package application;
 
+import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -16,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -28,8 +30,9 @@ public class Main extends Application {
 	
 	private int numLinesConvo = 10;
 	private int numLinesUsers = numLinesConvo;
-	private Queue<ClypeData> convoBuffer = new LinkedList<>();
 	private ClypeClient client;
+	
+	public static final int DEFAULT_PORT = 7000;
 	
 	public void showLoginWindow(Stage primaryStage) {
 		
@@ -59,48 +62,67 @@ public class Main extends Application {
 			 * credentials input
 			 */
 			
-			// username
-			Label usernameLabel = new Label("Username:");
+			// inputs
 			TextField usernameInput = new TextField();
-			HBox usernameHBox = new HBox();
-			usernameHBox.getChildren().addAll(usernameLabel, usernameInput);
-			
-			// ip
-			Label ipLabel = new Label("IP:"); // this will default to the client computer's IP in the future
-			TextField ipInput = new TextField();
-			ipInput.setText("209.99.195.87");
-			HBox ipHBox = new HBox();
-			ipHBox.getChildren().addAll(ipLabel, ipInput);
-			
-			// port
-			Label portLabel = new Label("Port:"); // this will default to the client computer's IP in the future
+			TextField hostnameInput = new TextField();
+			hostnameInput.setText(InetAddress.getLocalHost().getHostAddress());
 			TextField portInput = new TextField();
-			portInput.setText("7000");
-			HBox portHBox = new HBox();
-			portHBox.getChildren().addAll(portLabel, portInput);
+			portInput.setText( Integer.toString(DEFAULT_PORT) );
 			
 			// add to root
 			VBox credentialsVBox = new VBox();
-			credentialsVBox.getChildren().addAll(usernameHBox, ipHBox, portHBox);
+			credentialsVBox.getChildren().addAll(usernameInput, hostnameInput, portInput);
 			root.setCenter(credentialsVBox);
 			
 			/*
-			 * login
+			 * credentials labels
+			 */
+			
+			// labels
+			Label usernameLabel = new Label("Username:");
+			Label hostnameLabel = new Label("Hostname:"); // this will default to the client computer's IP in the future
+			Label portLabel = new Label("Port:"); 
+			
+			VBox credentialsLabels = new VBox();
+			credentialsLabels.getChildren().addAll(usernameLabel, hostnameLabel, portLabel);
+			
+			// add to root
+			root.setLeft(credentialsLabels);
+			
+			/*
+			 * login controls
 			 */
 			
 			// button
-			Button login = new Button("Log in");
-			LoginButtonHandler loginButtonHandler = new LoginButtonHandler(client, usernameInput, ipInput, portInput);
-			login.setOnMouseReleased(loginButtonHandler);
+			Button login = new Button("Log in");				
 			
 			// add to root
 			root.setBottom(login);
 			
+			// login handler
+			login.setOnMouseReleased(new EventHandler<MouseEvent>() {
+				public void handle(MouseEvent event) {
+					try {
+						if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
+							String username = usernameInput.getText();
+							String hostname = hostnameInput.getText();
+							int port = Integer.parseInt( portInput.getText() );
+																			
+							client = new ClypeClient(username, hostname, port);
+							
+							if (client.connectionOpen()) { // this is useless
+								showMainWindow(primaryStage);
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					
+				}
+			});	
 			
 			primaryStage.setScene(scene);
 			primaryStage.show();
-			
-			
 			
 			
 		} catch (Exception e) {
@@ -117,21 +139,6 @@ public class Main extends Application {
 			BorderPane root = new BorderPane();
 			Scene scene = new Scene(root, 900, 800);
 			scene.getStylesheets().add(getClass().getResource("stylesheet.css").toExternalForm());
-
-			/*
-			 * create ClypeClient
-			 */
-			
-//			Task<Void> createClientTask = new Task<Void>() {
-//				@Override
-//				protected Void call() throws Exception {
-//					client = new ClypeClient(System.getProperty("user.name"), "localhost", 7000);
-//					return null;
-//				}
-//
-//			};
-//			Thread sendMessagethread = new Thread(createClientTask);
-//			sendMessagethread.start();
 			
 			/*
 			 * title
@@ -308,12 +315,12 @@ public class Main extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.show();
 
-//			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-//				@Override
-//				public void handle(WindowEvent arg0) {
-//					client.setCloseConnection();
-//				}
-//			});
+			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+				@Override
+				public void handle(WindowEvent arg0) {
+					client.setCloseConnection();
+				}
+			});
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -323,9 +330,6 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		showLoginWindow(primaryStage);
-		
-//		showMainWindow(primaryStage);
-
 	}
 
 	public static void main(String[] args) {
