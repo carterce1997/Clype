@@ -1,11 +1,16 @@
 package application;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import data.ClypeData;
+import data.FileClypeData;
+import data.MessageClypeData;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import main.ClypeClient;
@@ -251,54 +256,74 @@ public class Main extends Application {
 			// user input box
 			TextArea messageInput = new TextArea(); // input box
 			messageInput.setPrefRowCount(4);
-			messageInput.setText("Enter your message here...");
 			messageInput.setWrapText(true);
 			messageInput.setStyle("-fx-background-color: transparent");
 			messageInput.setFont(Font.font("Arial", FontWeight.LIGHT, 18));
-//			MessageInputHandler messageHandler = new MessageInputHandler(messageInput);
-//			messageInput.setOnMouseClicked(messageHandler);
-			
-			// message input handler: when clicked, message input box clears
-			messageInput.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			messageInput.setEditable(true);
+
+
+			// button to send message
+			Button sendButton = new Button("Send");
+			sendButton.setMinSize(63, 150);
+			sendButton.setWrapText(true);
+			sendButton.setTextAlignment(TextAlignment.CENTER);
+			sendButton.setFont(Font.font("Arial", FontWeight.BOLD, 15));
+			sendButton.setOnMouseReleased(new EventHandler<MouseEvent>() {
+
 				@Override
 				public void handle(MouseEvent event) {
-					if (event.getEventType() == MouseEvent.MOUSE_CLICKED) {
-						if (messageInput.getText().equals("Enter your message here...")) {
-							messageInput.clear();
+					if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
+						if (client.getDataToSendToServer() == null) {
+							ClypeData textMessageData = new MessageClypeData(client.getUserName(), messageInput.getText(), ClypeData.SEND_MESSAGE);
+							client.setDataToSendToServer( textMessageData );
 						}
+						client.sendData();
+						
+						messageInput.clear();
 					}
 				}
 				
 			});
 
-			// button to send message
-			Button sendMessageButton = new Button("Send Message");
-			sendMessageButton.setMinSize(63, 150);
-			sendMessageButton.setWrapText(true);
-			sendMessageButton.setTextAlignment(TextAlignment.CENTER);
-			sendMessageButton.setFont(Font.font("Arial", FontWeight.BOLD, 15));
-			SendTextButtonHandler messageButtonHandler = new SendTextButtonHandler(client, messageInput);
-			sendMessageButton.setOnMouseReleased(messageButtonHandler);
-	
 			// button to send media
-			Button sendMediaButton = new Button("Send Media");
-			sendMediaButton.setMinSize(55, 150);
-			sendMediaButton.setWrapText(true);
-			sendMediaButton.setTextAlignment(TextAlignment.CENTER);
-			sendMediaButton.setFont(Font.font("Arial", FontWeight.BOLD, 15));
-			SendMediaButtonHandler mediaButtonHandler = new SendMediaButtonHandler();
-			sendMediaButton.setOnMouseReleased(mediaButtonHandler);
+			Button addMediaButton = new Button("Add Media");
+			addMediaButton.setMinSize(55, 150);
+			addMediaButton.setWrapText(true);
+			addMediaButton.setTextAlignment(TextAlignment.CENTER);
+			addMediaButton.setFont(Font.font("Arial", FontWeight.BOLD, 15));
 
+			addMediaButton.setOnMouseReleased( new EventHandler<MouseEvent>() {
+
+				@Override
+				public void handle(MouseEvent event) {
+					if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
+						FileChooser fileChooser = new FileChooser();
+						fileChooser.setTitle("Select File");
+
+						File file = fileChooser.showOpenDialog( primaryStage );
+						FileClypeData fileData = new FileClypeData(client.getUserName(), file.getAbsolutePath(), ClypeData.SEND_FILE);
+						
+						try {
+							fileData.readFileContents();
+							client.setDataToSendToServer(fileData);
+						} catch (IOException ioe) {
+							ioe.printStackTrace();
+						}
+					}
+				}
+				
+			});
+			
 			// HBox to hold both buttons with
 			HBox sendMessageButtons = new HBox();
 			sendMessageButtons.setCenterShape(true);
-			sendMessageButtons.getChildren().addAll(sendMessageButton, sendMediaButton);
+			sendMessageButtons.getChildren().addAll(sendButton, addMediaButton);
 
 			// HBox for all sending message controls
 			HBox sendMessageBoxControls = new HBox();
 			HBox.setHgrow(messageInput, Priority.ALWAYS);
-			HBox.setHgrow(sendMediaButton, Priority.ALWAYS);
-			HBox.setHgrow(sendMessageButton, Priority.ALWAYS);
+			HBox.setHgrow(addMediaButton, Priority.ALWAYS);
+			HBox.setHgrow(sendButton, Priority.ALWAYS);
 			sendMessageBoxControls.getChildren().addAll(leftSpacing, messageInput, sendMessageButtons, rightSpacing);
 
 			/*

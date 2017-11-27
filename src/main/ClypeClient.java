@@ -188,6 +188,21 @@ public class ClypeClient {
 	}
 
 	/**
+	 * Reads client data object
+	 */
+	public void setDataToSendToServer(ClypeData data) {
+		this.dataToSendToServer = data;
+	}
+	
+	public ClypeData getDataToSendToServer() {
+		if (this.dataToSendToServer != null) {
+			return this.dataToSendToServer;
+		} else {
+			return null;
+		}
+	}
+	
+	/**
 	 * Receives client data from the server.
 	 * 
 	 * @return A boolean which verifies whether the connection with the server is to
