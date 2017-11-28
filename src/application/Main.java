@@ -58,7 +58,6 @@ public class Main extends Application {
 			VBox titleVBox = new VBox();
 			titleVBox.getChildren().addAll(titleLabel);
 			root.setTop(titleVBox);
-			
 
 			/*
 			 * credentials input
@@ -87,7 +86,8 @@ public class Main extends Application {
 			
 			VBox credentialsLabels = new VBox();
 			credentialsLabels.getChildren().addAll(usernameLabel, hostnameLabel, portLabel);
-			
+			credentialsLabels.setSpacing(10);
+
 			// add labels to root
 			root.setLeft(credentialsLabels);
 			
@@ -96,10 +96,17 @@ public class Main extends Application {
 			 */
 			
 			// login button
-			Button login = new Button("Log in");				
-			
+			Button login = new Button("Log in");
+			login.setId("login-button");
+			login.setMinWidth(300);
+
+			HBox buttonBox = new HBox();
+			buttonBox.getChildren().add(login);
+			buttonBox.setAlignment(Pos.CENTER);
+			HBox.setHgrow(buttonBox, Priority.ALWAYS);
+
 			// add button to root
-			root.setBottom(login);
+			root.setBottom(buttonBox);
 			
 			// login button handler: creates new client and shows main window
 			login.setOnMouseReleased(new EventHandler<MouseEvent>() {
