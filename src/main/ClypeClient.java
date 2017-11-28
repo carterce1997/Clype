@@ -4,9 +4,11 @@ import data.*;
 import java.io.*;
 import java.net.BindException;
 import java.net.ConnectException;
+import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
@@ -64,22 +66,25 @@ public class ClypeClient {
 		this.outToServer = null;
 
 		try {
-			System.out.println("Attempting to connect to server.");
-			socket = new Socket(this.hostName, this.port);
+			socket = new Socket();
+			socket.connect(new InetSocketAddress(hostName, port), 1000);
 
 			this.outToServer = new ObjectOutputStream(socket.getOutputStream());
 			this.inFromServer = new ObjectInputStream(socket.getInputStream());
-			System.out.println("Connected to server.");
 
 			/*
 			 * listener = new Thread(new ClientSideServerListener(this)); listener.start();
 			 */
 			sendUserName();
 
+		} catch (SocketTimeoutException ste) {
+			System.err.println( ste.getMessage());
+			this.closeConnection = true;
 		} catch (BindException be) {
 			System.err.println("Unable to bind a socket to a port: " + be.getMessage());
 		} catch (ConnectException ce) {
 			System.err.println("Unable to connect to port: " + ce.getMessage());
+			this.closeConnection = true;
 		} catch (NoRouteToHostException nrthe) {
 			System.err.println("No route to the host . . .");
 		} catch (UnknownHostException uhe) {
@@ -193,7 +198,7 @@ public class ClypeClient {
 	public void setDataToSendToServer(ClypeData data) {
 		this.dataToSendToServer = data;
 	}
-	
+
 	public ClypeData getDataToSendToServer() {
 		if (this.dataToSendToServer != null) {
 			return this.dataToSendToServer;
@@ -201,7 +206,7 @@ public class ClypeClient {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Receives client data from the server.
 	 * 
@@ -275,11 +280,10 @@ public class ClypeClient {
 		this.dataToSendToServer = new MessageClypeData(this.userName, "LOGOUT", ClypeData.LOG_OUT);
 		sendData();
 
-		/*try {
-			listener.join();
-		} catch (InterruptedException ie) {
-			System.err.println(ie.getMessage());
-		}*/
+		/*
+		 * try { listener.join(); } catch (InterruptedException ie) {
+		 * System.err.println(ie.getMessage()); }
+		 */
 
 		try {
 			this.outToServer.close();

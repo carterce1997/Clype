@@ -63,7 +63,7 @@ public class ServerSideClientIO implements Runnable {
 			this.outToClient.close();
 			this.clientSocket.close();
 		} catch (IOException ioe) {
-			System.err.println("Issue running server side IO");
+			System.err.println(ioe.getMessage() + " with " +this.clientUserName);
 		}
 	}
 
@@ -109,7 +109,7 @@ public class ServerSideClientIO implements Runnable {
 				this.outToClient.close();
 				this.clientSocket.close();
 			} catch (IOException ioe) {
-				System.err.println("Error closing streams and sockets server side: " + ioe.getMessage());
+				System.err.println(ioe.getMessage() + " with " + this.clientUserName);
 			}
 		} catch (IOException ioe) {
 			System.err.println("Issue recieving data server side: " + ioe.getMessage());

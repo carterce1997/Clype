@@ -109,10 +109,12 @@ public class Main extends Application {
 							String username = usernameInput.getText();
 							String hostname = hostnameInput.getText();
 							int port = Integer.parseInt( portInput.getText() );
-																			
+																
+							System.out.println("Attempting to connect to server.");
 							client = new ClypeClient(username, hostname, port);
 							
-							if (client.connectionOpen()) { // this is useless
+							if (client.connectionOpen()) { // allows us to check if connection was made
+								System.out.println("Connected to server.");
 								showMainWindow(primaryStage);
 							}
 						}
