@@ -58,7 +58,7 @@ public class ClypeServer {
 				this.serverSideClientIOList.add(newServerSideClientIO);
 				Thread newClientThread = new Thread(newServerSideClientIO);
 				newClientThread.start();
-				
+
 			}
 
 			socket.close();
@@ -148,7 +148,7 @@ public class ClypeServer {
 		String listOfUsers = "";
 		int userCounter = 1;
 		for (ServerSideClientIO io : this.serverSideClientIOList) {
-			listOfUsers += "User " + userCounter + ": " + io.getUserName() + System.getProperty("line.separator");
+			listOfUsers += "- " + io.getUserName() + System.getProperty("line.separator");
 			++userCounter;
 		}
 		return listOfUsers;

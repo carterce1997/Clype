@@ -199,6 +199,7 @@ public class Main extends Application {
 
 			// list of users
 			TextArea usersList = new TextArea();
+			usersList.setId("users-box-list");
 			usersList.setPrefRowCount(this.numLinesUsers);
 			usersList.setWrapText(true);
 			usersList.setMaxWidth(100);
