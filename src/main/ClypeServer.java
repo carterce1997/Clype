@@ -58,6 +58,7 @@ public class ClypeServer {
 				this.serverSideClientIOList.add(newServerSideClientIO);
 				Thread newClientThread = new Thread(newServerSideClientIO);
 				newClientThread.start();
+				
 			}
 
 			socket.close();

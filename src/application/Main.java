@@ -29,15 +29,15 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 
 public class Main extends Application {
-	
+
 	private int numLinesConvo = 10;
 	private int numLinesUsers = numLinesConvo;
 	private ClypeClient client;
-	
+
 	public static final int DEFAULT_PORT = 7000;
-	
+
 	public void showLoginWindow(Stage primaryStage) {
-		
+
 		try {
 			/*
 			 * create root
@@ -45,11 +45,11 @@ public class Main extends Application {
 			BorderPane root = new BorderPane();
 			Scene scene = new Scene(root, 300, 200);
 			scene.getStylesheets().add(getClass().getResource("stylesheet.css").toExternalForm());
-			
+
 			/*
 			 * title
 			 */
-			
+
 			// title text
 			Label titleLabel = new Label(" Clype 2.0 Login");
 			titleLabel.setId("login-title");
@@ -62,39 +62,39 @@ public class Main extends Application {
 			/*
 			 * credentials input
 			 */
-			
+
 			// credential input fields
 			TextField usernameInput = new TextField();
 			TextField hostnameInput = new TextField();
 			hostnameInput.setText(InetAddress.getLocalHost().getHostAddress());
 			TextField portInput = new TextField();
-			portInput.setText( Integer.toString(DEFAULT_PORT) );
-			
+			portInput.setText(Integer.toString(DEFAULT_PORT));
+
 			// add fields to root
 			VBox credentialsVBox = new VBox();
 			credentialsVBox.getChildren().addAll(usernameInput, hostnameInput, portInput);
 			root.setCenter(credentialsVBox);
-			
+
 			/*
 			 * credentials labels
 			 */
-			
+
 			// credential labels
 			Label usernameLabel = new Label("Username:");
 			Label hostnameLabel = new Label("Hostname:"); // this will default to the client computer's IP in the future
-			Label portLabel = new Label("Port:"); 
-			
+			Label portLabel = new Label("Port:");
+
 			VBox credentialsLabels = new VBox();
 			credentialsLabels.getChildren().addAll(usernameLabel, hostnameLabel, portLabel);
 			credentialsLabels.setSpacing(10);
 
 			// add labels to root
 			root.setLeft(credentialsLabels);
-			
+
 			/*
 			 * login controls
 			 */
-			
+
 			// login button
 			Button login = new Button("Log in");
 			login.setId("login-button");
@@ -107,7 +107,7 @@ public class Main extends Application {
 
 			// add button to root
 			root.setBottom(buttonBox);
-			
+
 			// login button handler: creates new client and shows main window
 			login.setOnMouseReleased(new EventHandler<MouseEvent>() {
 				public void handle(MouseEvent event) {
@@ -115,11 +115,11 @@ public class Main extends Application {
 						if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
 							String username = usernameInput.getText();
 							String hostname = hostnameInput.getText();
-							int port = Integer.parseInt( portInput.getText() );
-																
+							int port = Integer.parseInt(portInput.getText());
+
 							System.out.println("Attempting to connect to server.");
 							client = new ClypeClient(username, hostname, port);
-							
+
 							if (client.connectionOpen()) { // allows us to check if connection was made
 								System.out.println("Connected to server.");
 								showMainWindow(primaryStage);
@@ -128,21 +128,19 @@ public class Main extends Application {
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					
+
 				}
-			});	
-			
-			
+			});
+
 			// show
 			primaryStage.setScene(scene);
 			primaryStage.show();
-			
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void showMainWindow(Stage primaryStage) {
 		try {
 
@@ -152,7 +150,7 @@ public class Main extends Application {
 			BorderPane root = new BorderPane();
 			Scene scene = new Scene(root, 900, 800);
 			scene.getStylesheets().add(getClass().getResource("stylesheet.css").toExternalForm());
-			
+
 			/*
 			 * title
 			 */
@@ -184,34 +182,6 @@ public class Main extends Application {
 			convoOutput.setText("Messages from other users will appear here!");
 			convoOutput.setFont(Font.font("Arial", FontWeight.LIGHT, 20));
 
-			Task<Void> incomingMessageTask = new Task<Void>() {
-				@Override
-				protected Void call() throws Exception {
-					boolean noMessages = true;// used to handle default text
-					boolean closedSocket = false;
-					while (client.connectionOpen() && !closedSocket) {
-						closedSocket = client.recieveData();
-						ClypeData messageFromServer = client.getData();
-						String username = messageFromServer.getUserName();
-						String message = messageFromServer.getData();
-						
-						if (!closedSocket) {
-							if (noMessages) {
-								convoOutput.clear();
-								noMessages = false;
-								convoOutput.setText(username + ": " + message);
-							} else {
-								convoOutput.setText(convoOutput.getText() + System.getProperty("line.separator")
-										+ username + ": " + message);
-							}
-						}
-					}
-					return null;
-				}
-			};
-			Thread recieveMessageThread = new Thread(incomingMessageTask);
-			recieveMessageThread.start();
-
 			// add convoBox to root
 			VBox convoBox = new VBox();
 			convoBox.getChildren().addAll(convoBoxLabel, convoOutput);
@@ -230,7 +200,6 @@ public class Main extends Application {
 			// list of users
 			TextArea usersList = new TextArea();
 			usersList.setPrefRowCount(this.numLinesUsers);
-			usersList.setText("User1 \nUser2");
 			usersList.setWrapText(true);
 			usersList.setMaxWidth(100);
 			usersList.setEditable(false);
@@ -243,6 +212,42 @@ public class Main extends Application {
 			VBox.setVgrow(usersList, Priority.ALWAYS);// Allows the list to expand with the window
 			usersBox.setScaleX(.92);
 			root.setRight(usersBox);
+
+			/*
+			 * Handles incoming messages
+			 */
+			Task<Void> incomingMessageTask = new Task<Void>() {
+				@Override
+				protected Void call() throws Exception {
+					boolean noMessages = true;// used to handle default text
+					boolean closedSocket = false;
+					while (client.connectionOpen() && !closedSocket) {
+						closedSocket = client.recieveData();
+						ClypeData messageFromServer = client.getData();
+
+						if (messageFromServer.getType() == ClypeData.SEND_MESSAGE) {
+							String username = messageFromServer.getUserName();
+							String message = messageFromServer.getData();
+
+							if (!closedSocket) {
+								if (noMessages) {
+									convoOutput.clear();
+									noMessages = false;
+									convoOutput.setText(username + ": " + message);
+								} else {
+									convoOutput.setText(convoOutput.getText() + System.getProperty("line.separator")
+											+ username + ": " + message);
+								}
+							}
+						} else if (messageFromServer.getType() == ClypeData.LIST_USERS) {
+							usersList.setText(messageFromServer.getData());
+						}
+					}
+					return null;
+				}
+			};
+			Thread recieveMessageThread = new Thread(incomingMessageTask);
+			recieveMessageThread.start();
 
 			/*
 			 * Box for sending messages
@@ -270,7 +275,6 @@ public class Main extends Application {
 			messageInput.setFont(Font.font("Arial", FontWeight.LIGHT, 18));
 			messageInput.setEditable(true);
 
-
 			// button to send message
 			Button sendButton = new Button("Send");
 			sendButton.setMinSize(63, 150);
@@ -283,15 +287,16 @@ public class Main extends Application {
 				public void handle(MouseEvent event) {
 					if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
 						if (client.getDataToSendToServer() == null) {
-							ClypeData textMessageData = new MessageClypeData(client.getUserName(), messageInput.getText(), ClypeData.SEND_MESSAGE);
-							client.setDataToSendToServer( textMessageData );
+							ClypeData textMessageData = new MessageClypeData(client.getUserName(),
+									messageInput.getText(), ClypeData.SEND_MESSAGE);
+							client.setDataToSendToServer(textMessageData);
 						}
 						client.sendData();
-						
+
 						messageInput.clear();
 					}
 				}
-				
+
 			});
 
 			// button to send media
@@ -301,7 +306,7 @@ public class Main extends Application {
 			addMediaButton.setTextAlignment(TextAlignment.CENTER);
 			addMediaButton.setFont(Font.font("Arial", FontWeight.BOLD, 15));
 
-			addMediaButton.setOnMouseReleased( new EventHandler<MouseEvent>() {
+			addMediaButton.setOnMouseReleased(new EventHandler<MouseEvent>() {
 
 				@Override
 				public void handle(MouseEvent event) {
@@ -309,9 +314,10 @@ public class Main extends Application {
 						FileChooser fileChooser = new FileChooser();
 						fileChooser.setTitle("Select File");
 
-						File file = fileChooser.showOpenDialog( primaryStage );
-						FileClypeData fileData = new FileClypeData(client.getUserName(), file.getAbsolutePath(), ClypeData.SEND_FILE);
-						
+						File file = fileChooser.showOpenDialog(primaryStage);
+						FileClypeData fileData = new FileClypeData(client.getUserName(), file.getAbsolutePath(),
+								ClypeData.SEND_FILE);
+
 						try {
 							fileData.readFileContents();
 							client.setDataToSendToServer(fileData);
@@ -320,9 +326,9 @@ public class Main extends Application {
 						}
 					}
 				}
-				
+
 			});
-			
+
 			// HBox to hold both buttons with
 			HBox sendMessageButtons = new HBox();
 			sendMessageButtons.setCenterShape(true);
@@ -372,7 +378,7 @@ public class Main extends Application {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		showLoginWindow(primaryStage);

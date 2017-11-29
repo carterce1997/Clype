@@ -24,7 +24,7 @@ public class MessageClypeData extends ClypeData {
 		super(userName, type);
 		this.message = message;
 	}
-
+	
 	/***
 	 * A delegating default constructor. Defaults to username "Anon", connection
 	 * type 0, and no message data.

@@ -50,11 +50,13 @@ public class ServerSideClientIO implements Runnable {
 			recieveUserName();
 			System.out.println("Accepted new client: " + clientUserName + ' ' + new Date());
 
+			sendListUsers();
+			
 			while (!this.closeConnection) {
 				recieveData();
 				if (this.dataToRecieveFromClient != null) {
 					this.setSendDataToClient(this.dataToRecieveFromClient);
-					this.broadcastToClients();
+					broadcastToClients();
 					this.dataToSendToClient = null;
 				}
 			}
@@ -88,6 +90,7 @@ public class ServerSideClientIO implements Runnable {
 				sendData();
 				this.server.remove(this);
 				dataToRecieveFromClient = null;
+				sendListUsers();
 				this.inFromClient.close();
 				this.outToClient.close();
 				this.clientSocket.close();
@@ -153,6 +156,11 @@ public class ServerSideClientIO implements Runnable {
 		}
 	}
 
+	private void sendListUsers() {
+		setSendDataToClient(new MessageClypeData("",server.getListUsers(),ClypeData.LIST_USERS));
+		broadcastToClients();
+	}
+	
 	/***
 	 * Sets data to send to client
 	 * 
@@ -167,11 +175,11 @@ public class ServerSideClientIO implements Runnable {
 	 * Broadcasts data to clients.
 	 */
 	public void broadcastToClients() {
-		if (this.dataToRecieveFromClient.getType() != ClypeData.LIST_USERS) {
+	//	if (this.dataToRecieveFromClient.getType() != ClypeData.LIST_USERS) {
 			this.server.broadcast(this.dataToSendToClient); // send to all clients
-		} else {
-			this.server.broadcast(this.dataToSendToClient, this);// send to only this client
-		}
+	//	} else {
+	//		this.server.broadcast(this.dataToSendToClient, this);// send to only this client
+	//	}
 
 	}
 

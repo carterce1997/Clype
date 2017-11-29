@@ -20,6 +20,7 @@ import java.util.Scanner;
  */
 public class ClypeClient {
 	private final static int DEFAULT_PORT = 7000;
+	private final static int SOCKET_TIMEOUT = 7000;
 	private final static int MININMUM_PORT_NUM = 1024;
 	private final static String ANONYMOUS_USER = "Anon";
 	private final static String LOCAL_HOST = "localhost";
@@ -67,7 +68,7 @@ public class ClypeClient {
 
 		try {
 			socket = new Socket();
-			socket.connect(new InetSocketAddress(hostName, port), 1000);
+			socket.connect(new InetSocketAddress(hostName, port), SOCKET_TIMEOUT);
 
 			this.outToServer = new ObjectOutputStream(socket.getOutputStream());
 			this.inFromServer = new ObjectInputStream(socket.getInputStream());
@@ -78,16 +79,20 @@ public class ClypeClient {
 			sendUserName();
 
 		} catch (SocketTimeoutException ste) {
-			System.err.println( ste.getMessage());
 			this.closeConnection = true;
+			System.err.println( ste.getMessage());
 		} catch (BindException be) {
 			System.err.println("Unable to bind a socket to a port: " + be.getMessage());
+			this.closeConnection = true;
 		} catch (ConnectException ce) {
+			this.closeConnection = true;
 			System.err.println("Unable to connect to port: " + ce.getMessage());
 			this.closeConnection = true;
 		} catch (NoRouteToHostException nrthe) {
+			this.closeConnection = true;
 			System.err.println("No route to the host . . .");
 		} catch (UnknownHostException uhe) {
+			this.closeConnection = true;
 			System.err.println("Unknown host. . .");
 		} catch (SocketException se) {
 			System.err.println("Socket exception: " + se.getMessage());
@@ -279,11 +284,6 @@ public class ClypeClient {
 		this.closeConnection = true;
 		this.dataToSendToServer = new MessageClypeData(this.userName, "LOGOUT", ClypeData.LOG_OUT);
 		sendData();
-
-		/*
-		 * try { listener.join(); } catch (InterruptedException ie) {
-		 * System.err.println(ie.getMessage()); }
-		 */
 
 		try {
 			this.outToServer.close();
