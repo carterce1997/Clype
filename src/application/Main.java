@@ -226,7 +226,7 @@ public class Main extends Application {
 						closedSocket = client.recieveData();
 						ClypeData messageFromServer = client.getData();
 
-						if (messageFromServer.getType() == ClypeData.SEND_MESSAGE) {
+						if (messageFromServer.getType() == ClypeData.SEND_MESSAGE || messageFromServer.getType() == ClypeData.SEND_FILE ) {
 							String username = messageFromServer.getUserName();
 							String message = messageFromServer.getData();
 
