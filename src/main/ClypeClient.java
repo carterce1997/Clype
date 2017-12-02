@@ -52,13 +52,13 @@ public class ClypeClient {
 	 */
 	public ClypeClient(String userName, String hostName, int port) throws IllegalArgumentException {
 		if (port < MININMUM_PORT_NUM) {
-			throw new IllegalArgumentException("Illegal port number given to ClypeClient constructor");
+			throw new IllegalArgumentException("Illegal port number given.");
 		}
 		if (userName == null) {
-			throw new IllegalArgumentException("Null user name given to ClypeClient constructor");
+			throw new IllegalArgumentException("Null user name given.");
 		}
 		if (hostName == null) {
-			throw new IllegalArgumentException("Null host namegiven to ClypeClient constructor");
+			throw new IllegalArgumentException("Null host name given.");
 		}
 		this.userName = userName;
 		this.hostName = hostName;

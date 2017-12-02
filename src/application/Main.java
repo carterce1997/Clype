@@ -80,9 +80,10 @@ public class Main extends Application {
 			 */
 
 			// credential labels
-			Label usernameLabel = new Label("Username:");
-			Label hostnameLabel = new Label("Hostname:"); // this will default to the client computer's IP in the future
-			Label portLabel = new Label("Port:");
+			Label usernameLabel = new Label(" Username:");
+			Label hostnameLabel = new Label(" Host-name:"); // this will default to the client computer's IP in the
+															// future
+			Label portLabel = new Label(" Port:");
 
 			VBox credentialsLabels = new VBox();
 			credentialsLabels.getChildren().addAll(usernameLabel, hostnameLabel, portLabel);
@@ -91,9 +92,13 @@ public class Main extends Application {
 			// add labels to root
 			root.setLeft(credentialsLabels);
 
-			/*
-			 * login controls
-			 */
+			// Error box
+			HBox errorBox = new HBox();
+			Label errorField = new Label("");
+			errorBox.setMinHeight(30);
+			errorField.setId("error-field");
+			errorBox.getChildren().add(errorField);
+			errorBox.setAlignment(Pos.CENTER);
 
 			// login button
 			Button login = new Button("Log in");
@@ -105,8 +110,11 @@ public class Main extends Application {
 			buttonBox.setAlignment(Pos.CENTER);
 			HBox.setHgrow(buttonBox, Priority.ALWAYS);
 
+			VBox bottomBox = new VBox();
+			bottomBox.getChildren().addAll(errorBox, buttonBox);
+
 			// add button to root
-			root.setBottom(buttonBox);
+			root.setBottom(bottomBox);
 
 			// login button handler: creates new client and shows main window
 			login.setOnMouseReleased(new EventHandler<MouseEvent>() {
@@ -117,15 +125,25 @@ public class Main extends Application {
 							String hostname = hostnameInput.getText();
 							int port = Integer.parseInt(portInput.getText());
 
-							System.out.println("Attempting to connect to server.");
-							client = new ClypeClient(username, hostname, port);
+							if (!username.isEmpty() && !hostname.isEmpty()) {
+								System.out.println("Attempting to connect to server.");
+								client = new ClypeClient(username, hostname, port);
 
-							if (client.connectionOpen()) { // allows us to check if connection was made
-								System.out.println("Connected to server.");
-								showMainWindow(primaryStage);
+								if (client.connectionOpen()) { // allows us to check if connection was made
+									showMainWindow(primaryStage);
+								} else {
+									errorField.setText("Could not connect to server.");
+								}
+							} else {
+								errorField.setText("Error: Invalid username or host-name given");
 							}
 						}
-					} catch (Exception e) {
+					} catch (NumberFormatException nfe) {
+						errorField.setText("Invalid port number given.");
+					}catch(IllegalArgumentException iae) {
+						errorField.setText(iae.getMessage());
+					}
+					catch (Exception e) {
 						e.printStackTrace();
 					}
 
@@ -226,7 +244,8 @@ public class Main extends Application {
 						closedSocket = client.recieveData();
 						ClypeData messageFromServer = client.getData();
 
-						if (messageFromServer.getType() == ClypeData.SEND_MESSAGE || messageFromServer.getType() == ClypeData.SEND_FILE ) {
+						if (messageFromServer.getType() == ClypeData.SEND_MESSAGE
+								|| messageFromServer.getType() == ClypeData.SEND_FILE) {
 							String username = messageFromServer.getUserName();
 							String message = messageFromServer.getData();
 
