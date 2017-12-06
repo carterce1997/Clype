@@ -20,7 +20,7 @@ import java.util.Scanner;
  */
 public class ClypeClient {
 	private final static int DEFAULT_PORT = 7000;
-	private final static int SOCKET_TIMEOUT = 7000;
+	private final static int SOCKET_TIMEOUT = 15000;
 	private final static int MININMUM_PORT_NUM = 1024;
 	private final static String ANONYMOUS_USER = "Anon";
 	private final static String LOCAL_HOST = "localhost";
@@ -356,8 +356,7 @@ public class ClypeClient {
 
 	public String toString() {
 		String result = "Username: " + this.userName + "\nHostname: " + this.hostName + "\nPort: " + this.port
-				+ "\nClose Connection: " + this.closeConnection + "\nData to send: " + this.dataToSendToServer.getData()
-				+ "\nData to recieve: " + this.dataToRecieveFromServer.getData();
+				+ "\nClose Connection: " + this.closeConnection;
 		return result;
 	}
 

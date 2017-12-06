@@ -81,28 +81,28 @@ public abstract class ClypeData implements Serializable {
 		return date;
 	}
 
-	/**
-	 * Returns data stored in subclass.
-	 * 
-	 * @return The data.
-	 */
-	public abstract String getData();
-	
-	/**
-	 * Returns data stored in subclass.
-	 * 
-	 * @return The data.
-	 */
-	public abstract RenderedImage getData();
+//	/**
+//	 * Returns data stored in subclass.
+//	 * 
+//	 * @return The data.
+//	 */
+//	public abstract String getData();
+//	
+//	/**
+//	 * Returns data stored in subclass.
+//	 * 
+//	 * @return The data.
+//	 */
+//	public abstract RenderedImage getPhotoData();
 
-	/**
-	 * Returns encrypted data stored in subclass in plaintext.
-	 * 
-	 * @param key
-	 *            The encryption key.
-	 * @return The data.
-	 */
-	public abstract String getData(String key);
+//	/**
+//	 * Returns encrypted data stored in subclass in plaintext.
+//	 * 
+//	 * @param key
+//	 *            The encryption key.
+//	 * @return The data.
+//	 */
+//	public abstract String getData(String key);
 
 	/**
 	 * Encrypts a string using a key.

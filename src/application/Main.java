@@ -1,5 +1,6 @@
 package application;
 
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -198,7 +199,7 @@ public class Main extends Application {
 			convoOutput.setWrapText(true);
 			convoOutput.setEditable(false);
 			convoOutput.setMinHeight(200);
-			convoOutput.setText("Messages from other users will appear here!");
+			convoOutput.setPromptText("Messages from other users will appear here!");
 			convoOutput.setFont(Font.font("Arial", FontWeight.LIGHT, 20));
 
 			// add convoBox to root
@@ -246,9 +247,9 @@ public class Main extends Application {
 						ClypeData messageFromServer = client.getData();
 
 						if (messageFromServer.getType() == ClypeData.SEND_MESSAGE) {
-							messageFromServer = (MessageClypeData) messageFromServer;
-							String username = messageFromServer.getUserName();
-							String message = messageFromServer.getData();
+							MessageClypeData messageDataFromServer = (MessageClypeData) messageFromServer;
+							String username = messageDataFromServer.getUserName();
+							String message = messageDataFromServer.getData();
 
 							if (!closedSocket) {
 								if (noMessages) {
@@ -261,11 +262,12 @@ public class Main extends Application {
 								}
 							}
 						} else if (messageFromServer.getType() == ClypeData.LIST_USERS) {
-							usersList.setText(messageFromServer.getData());
+							MessageClypeData users = (MessageClypeData)messageFromServer;
+							usersList.setText(users.getData());
 						} else if (messageFromServer.getType() == ClypeData.SEND_FILE) {
-							messageFromServer = (FileClypeData) messageFromServer;
-							String username = messageFromServer.getUserName();
-							String message = messageFromServer.getData();
+							FileClypeData fileMessageFromServer = (FileClypeData) messageFromServer;
+							String username = fileMessageFromServer.getUserName();
+							String message = fileMessageFromServer.getData();
 
 							if (!closedSocket) {
 								if (noMessages) {
@@ -278,18 +280,18 @@ public class Main extends Application {
 								}
 							}
 						} else if (messageFromServer.getType() == ClypeData.SEND_PHOTO) {
-							messageFromServer = (PhotoClypeData) messageFromServer;
-							String username = messageFromServer.getUserName();
-							String message = messageFromServer.getData();
+							PhotoClypeData photoMessageFromServer = (PhotoClypeData) messageFromServer;
+							String username = photoMessageFromServer.getUserName();
+							RenderedImage message = photoMessageFromServer.getData();
 
 							if (!closedSocket) {
 								if (noMessages) {
 									convoOutput.clear();
 									noMessages = false;
-									convoOutput.setText(username + ": " + message);
+//									convoOutput.setText(username + ": " + message);
 								} else {
-									convoOutput.setText(convoOutput.getText() + System.getProperty("line.separator")
-											+ username + ": " + message);
+//									convoOutput.setText(convoOutput.getText() + System.getProperty("line.separator")
+//											+ username + ": " + message);
 								}
 							}
 						}
@@ -325,7 +327,8 @@ public class Main extends Application {
 			messageInput.setStyle("-fx-background-color: transparent");
 			messageInput.setFont(Font.font("Arial", FontWeight.LIGHT, 18));
 			messageInput.setEditable(true);
-
+			messageInput.setPromptText("Type a message here!");
+			
 			// button to send message
 			Button sendButton = new Button("Send");
 			sendButton.setMinSize(63, 150);
@@ -351,7 +354,7 @@ public class Main extends Application {
 			});
 
 			// button to send media
-			Button addMediaButton = new Button("Add Media");
+			Button addMediaButton = new Button("Add File");
 			addMediaButton.setMinSize(55, 150);
 			addMediaButton.setWrapText(true);
 			addMediaButton.setTextAlignment(TextAlignment.CENTER);
