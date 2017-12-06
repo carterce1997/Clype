@@ -354,13 +354,13 @@ public class Main extends Application {
 			});
 
 			// button to send media
-			Button addMediaButton = new Button("Add File");
-			addMediaButton.setMinSize(55, 150);
-			addMediaButton.setWrapText(true);
-			addMediaButton.setTextAlignment(TextAlignment.CENTER);
-			addMediaButton.setFont(Font.font("Arial", FontWeight.BOLD, 15));
+			Button addFileButton = new Button("Add File");
+			addFileButton.setMinSize(55, 150);
+			addFileButton.setWrapText(true);
+			addFileButton.setTextAlignment(TextAlignment.CENTER);
+			addFileButton.setFont(Font.font("Arial", FontWeight.BOLD, 15));
 
-			addMediaButton.setOnMouseReleased(new EventHandler<MouseEvent>() {
+			addFileButton.setOnMouseReleased(new EventHandler<MouseEvent>() {
 
 				@Override
 				public void handle(MouseEvent event) {
@@ -383,15 +383,41 @@ public class Main extends Application {
 
 			});
 
+			Button addPhotoButton = new Button("Add photo");
+			addPhotoButton.setMinSize(55, 150);
+			addPhotoButton.setWrapText(true);
+			addPhotoButton.setTextAlignment(TextAlignment.CENTER);
+			addPhotoButton.setFont(Font.font("Arial", FontWeight.BOLD, 15));
+			addPhotoButton.setOnMouseReleased( new EventHandler<MouseEvent>() {
+
+				@Override
+				public void handle(MouseEvent event) {
+					FileChooser fileChooser = new FileChooser();
+					fileChooser.setTitle("Select File");
+					
+					File file = fileChooser.showOpenDialog(primaryStage);
+					PhotoClypeData photoData = new PhotoClypeData(client.getUserName(), file.getAbsolutePath(), ClypeData.SEND_PHOTO);
+					
+					try {
+						photoData.readClientData();
+						client.setDataToSendToServer(photoData);
+					} catch (Exception ioe) {
+						ioe.printStackTrace();
+					}
+				}
+				
+			});
+			
 			// HBox to hold both buttons with
 			HBox sendMessageButtons = new HBox();
 			sendMessageButtons.setCenterShape(true);
-			sendMessageButtons.getChildren().addAll(sendButton, addMediaButton);
+			sendMessageButtons.getChildren().addAll(sendButton, addFileButton, addPhotoButton);
 
 			// HBox for all sending message controls
 			HBox sendMessageBoxControls = new HBox();
 			HBox.setHgrow(messageInput, Priority.ALWAYS);
-			HBox.setHgrow(addMediaButton, Priority.ALWAYS);
+			HBox.setHgrow(addFileButton, Priority.ALWAYS);
+			HBox.setHgrow(addPhotoButton, Priority.ALWAYS);
 			HBox.setHgrow(sendButton, Priority.ALWAYS);
 			sendMessageBoxControls.getChildren().addAll(leftSpacing, messageInput, sendMessageButtons, rightSpacing);
 
