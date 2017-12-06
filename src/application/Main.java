@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import data.ClypeData;
 import data.FileClypeData;
 import data.MessageClypeData;
+import data.PhotoClypeData;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
@@ -244,8 +245,8 @@ public class Main extends Application {
 						closedSocket = client.recieveData();
 						ClypeData messageFromServer = client.getData();
 
-						if (messageFromServer.getType() == ClypeData.SEND_MESSAGE
-								|| messageFromServer.getType() == ClypeData.SEND_FILE) {
+						if (messageFromServer.getType() == ClypeData.SEND_MESSAGE) {
+							messageFromServer = (MessageClypeData) messageFromServer;
 							String username = messageFromServer.getUserName();
 							String message = messageFromServer.getData();
 
@@ -261,6 +262,36 @@ public class Main extends Application {
 							}
 						} else if (messageFromServer.getType() == ClypeData.LIST_USERS) {
 							usersList.setText(messageFromServer.getData());
+						} else if (messageFromServer.getType() == ClypeData.SEND_FILE) {
+							messageFromServer = (FileClypeData) messageFromServer;
+							String username = messageFromServer.getUserName();
+							String message = messageFromServer.getData();
+
+							if (!closedSocket) {
+								if (noMessages) {
+									convoOutput.clear();
+									noMessages = false;
+									convoOutput.setText(username + ": " + message);
+								} else {
+									convoOutput.setText(convoOutput.getText() + System.getProperty("line.separator")
+											+ username + ": " + message);
+								}
+							}
+						} else if (messageFromServer.getType() == ClypeData.SEND_PHOTO) {
+							messageFromServer = (PhotoClypeData) messageFromServer;
+							String username = messageFromServer.getUserName();
+							String message = messageFromServer.getData();
+
+							if (!closedSocket) {
+								if (noMessages) {
+									convoOutput.clear();
+									noMessages = false;
+									convoOutput.setText(username + ": " + message);
+								} else {
+									convoOutput.setText(convoOutput.getText() + System.getProperty("line.separator")
+											+ username + ": " + message);
+								}
+							}
 						}
 					}
 					return null;

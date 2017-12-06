@@ -1,6 +1,7 @@
 package data;
 
 import java.util.Date;
+import java.awt.image.RenderedImage;
 import java.io.Serializable;
 
 /**
@@ -13,6 +14,7 @@ public abstract class ClypeData implements Serializable {
 	public static final int LOG_OUT = 1;
 	public static final int SEND_FILE = 2;
 	public static final int SEND_MESSAGE = 3;
+	public static final int SEND_PHOTO = 4;
 
 	public final static String alphabet = "abcdefghijklmnopqrstuvwxyz";
 	public final static String alphabetUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -85,6 +87,13 @@ public abstract class ClypeData implements Serializable {
 	 * @return The data.
 	 */
 	public abstract String getData();
+	
+	/**
+	 * Returns data stored in subclass.
+	 * 
+	 * @return The data.
+	 */
+	public abstract RenderedImage getData();
 
 	/**
 	 * Returns encrypted data stored in subclass in plaintext.
