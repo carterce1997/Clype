@@ -4,6 +4,8 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
+
 import data.ClypeData;
 import data.FileClypeData;
 import data.MessageClypeData;
@@ -35,6 +37,7 @@ public class Main extends Application {
 	private int numLinesConvo = 10;
 	private int numLinesUsers = numLinesConvo;
 	private ClypeClient client;
+	private ArrayList<HBox> messages;
 
 	public static final int DEFAULT_PORT = 7000;
 
@@ -193,14 +196,10 @@ public class Main extends Application {
 			convoBoxLabel.setId("convo-box-label");
 
 			// list of incoming messages
-			TextArea convoOutput = new TextArea(); // messages from users box
-			convoOutput.setPrefRowCount(this.numLinesConvo);
-			convoOutput.clear();
-			convoOutput.setWrapText(true);
-			convoOutput.setEditable(false);
+
+			VBox convoOutput = new VBox();
 			convoOutput.setMinHeight(200);
-			convoOutput.setPromptText("Messages from other users will appear here!");
-			convoOutput.setFont(Font.font("Arial", FontWeight.LIGHT, 20));
+			
 
 			// add convoBox to root
 			VBox convoBox = new VBox();
@@ -250,17 +249,10 @@ public class Main extends Application {
 							MessageClypeData messageDataFromServer = (MessageClypeData) messageFromServer;
 							String username = messageDataFromServer.getUserName();
 							String message = messageDataFromServer.getData();
-
-							if (!closedSocket) {
-								if (noMessages) {
-									convoOutput.clear();
-									noMessages = false;
-									convoOutput.setText(username + ": " + message);
-								} else {
-									convoOutput.setText(convoOutput.getText() + System.getProperty("line.separator")
-											+ username + ": " + message);
-								}
-							}
+								
+							HBox messageHBox = new HBox( new TextField(username + ": " + message));							
+							convoOutput.getChildren().add(messageHBox);
+							
 						} else if (messageFromServer.getType() == ClypeData.LIST_USERS) {
 							MessageClypeData users = (MessageClypeData)messageFromServer;
 							usersList.setText(users.getData());
