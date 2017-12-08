@@ -13,6 +13,7 @@ import data.PhotoClypeData;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -21,13 +22,18 @@ import main.ClypeClient;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
@@ -196,15 +202,17 @@ public class Main extends Application {
 			convoBoxLabel.setId("convo-box-label");
 
 			// list of incoming messages
-
-			VBox convoOutput = new VBox();
-			convoOutput.setMinHeight(200);
 			
+			VBox convoOutput = new VBox(5);
+			
+			ScrollPane convoContainer = new ScrollPane();
+			convoContainer.setPrefSize(216, 400);
+			convoContainer.setContent(convoOutput);
 
 			// add convoBox to root
 			VBox convoBox = new VBox();
-			convoBox.getChildren().addAll(convoBoxLabel, convoOutput);
-			VBox.setVgrow(convoOutput, Priority.ALWAYS);// allows conversation box to grow with window
+			convoBox.getChildren().addAll(convoBoxLabel, convoContainer);
+			VBox.setVgrow(convoContainer, Priority.ALWAYS);// allows conversation box to grow with window
 
 			root.setCenter(convoBox);
 
@@ -244,14 +252,14 @@ public class Main extends Application {
 					while (client.connectionOpen() && !closedSocket) {
 						closedSocket = client.recieveData();
 						ClypeData messageFromServer = client.getData();
-
+												
 						if (messageFromServer.getType() == ClypeData.SEND_MESSAGE) {
 							MessageClypeData messageDataFromServer = (MessageClypeData) messageFromServer;
 							String username = messageDataFromServer.getUserName();
 							String message = messageDataFromServer.getData();
 								
-							HBox messageHBox = new HBox( new TextField(username + ": " + message));							
-							convoOutput.getChildren().add(messageHBox);
+							Label messageOutput = new Label(username + ":\n" + message);
+							convoOutput.getChildren().add(messageOutput); // WHY
 							
 						} else if (messageFromServer.getType() == ClypeData.LIST_USERS) {
 							MessageClypeData users = (MessageClypeData)messageFromServer;
@@ -261,16 +269,16 @@ public class Main extends Application {
 							String username = fileMessageFromServer.getUserName();
 							String message = fileMessageFromServer.getData();
 
-							if (!closedSocket) {
-								if (noMessages) {
-									convoOutput.clear();
-									noMessages = false;
-									convoOutput.setText(username + ": " + message);
-								} else {
-									convoOutput.setText(convoOutput.getText() + System.getProperty("line.separator")
-											+ username + ": " + message);
-								}
-							}
+//							if (!closedSocket) {
+//								if (noMessages) {
+//									convoOutput.clear();
+//									noMessages = false;
+//									convoOutput.setText(username + ": " + message);
+//								} else {
+//									convoOutput.setText(convoOutput.getText() + System.getProperty("line.separator")
+//											+ username + ": " + message);
+//								}
+//							}
 						} else if (messageFromServer.getType() == ClypeData.SEND_PHOTO) {
 							PhotoClypeData photoMessageFromServer = (PhotoClypeData) messageFromServer;
 							String username = photoMessageFromServer.getUserName();
@@ -278,7 +286,6 @@ public class Main extends Application {
 
 							if (!closedSocket) {
 								if (noMessages) {
-									convoOutput.clear();
 									noMessages = false;
 //									convoOutput.setText(username + ": " + message);
 								} else {
