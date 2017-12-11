@@ -13,12 +13,7 @@ import data.PhotoClypeData;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import main.ClypeClient;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -26,17 +21,18 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import main.ClypeClient;
+
 
 public class Main extends Application {
 
@@ -259,7 +255,7 @@ public class Main extends Application {
 							String message = messageDataFromServer.getData();
 								
 							Label messageOutput = new Label(username + ":\n" + message);
-							convoOutput.getChildren().add(messageOutput); // WHY
+							convoOutput.getChildren().add(new HBox(messageOutput)); // WHY
 							
 						} else if (messageFromServer.getType() == ClypeData.LIST_USERS) {
 							MessageClypeData users = (MessageClypeData)messageFromServer;
