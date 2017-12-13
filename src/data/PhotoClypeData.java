@@ -1,7 +1,6 @@
 package data;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -55,7 +54,6 @@ public class PhotoClypeData extends ClypeData {
 	public void readData() {
 		try {
 			this.image = ImageIO.read(new File(this.fileName));
-			// buffered_image= image.r
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
