@@ -200,6 +200,7 @@ public class Main extends Application {
 			// list of incoming messages
 			VBox convoOutput = new VBox();
 			ScrollPane convoContainer = new ScrollPane(convoOutput);
+			convoContainer.setVvalue(1.0); // 1.0 means 100% at the bottom
 
 			// add convoBox to root
 			VBox convoBox = new VBox();
@@ -397,16 +398,17 @@ public class Main extends Application {
 					fileChooser.setTitle("Select File");
 
 					File file = fileChooser.showOpenDialog(primaryStage);
-					PhotoClypeData photoData = new PhotoClypeData(client.getUserName(), file.getAbsolutePath(),
-							ClypeData.SEND_PHOTO);
+					if (file != null) {
+						PhotoClypeData photoData = new PhotoClypeData(client.getUserName(), file.getAbsolutePath(),
+								ClypeData.SEND_PHOTO);
 
-					try {
-						client.setDataToSendToServer(photoData);
-					} catch (Exception ioe) {
-						ioe.printStackTrace();
+						try {
+							client.setDataToSendToServer(photoData);
+						} catch (Exception ioe) {
+							ioe.printStackTrace();
+						}
 					}
 				}
-
 			});
 
 			// HBox to hold both buttons with
