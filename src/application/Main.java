@@ -6,11 +6,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
-import data.ClypeData;
-import data.FileClypeData;
-import data.MessageClypeData;
-import data.PhotoClypeData;
+import data.*;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -31,7 +29,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import main.ClypeClient;
+import main.*;
 
 
 public class Main extends Application {
@@ -198,12 +196,8 @@ public class Main extends Application {
 			convoBoxLabel.setId("convo-box-label");
 
 			// list of incoming messages
-			
-			VBox convoOutput = new VBox(5);
-			
-			ScrollPane convoContainer = new ScrollPane();
-			convoContainer.setPrefSize(216, 400);
-			convoContainer.setContent(convoOutput);
+			VBox convoOutput = new VBox();
+			ScrollPane convoContainer = new ScrollPane(convoOutput);
 
 			// add convoBox to root
 			VBox convoBox = new VBox();
@@ -255,7 +249,9 @@ public class Main extends Application {
 							String message = messageDataFromServer.getData();
 								
 							Label messageOutput = new Label(username + ":\n" + message);
-							convoOutput.getChildren().add(new HBox(messageOutput)); // WHY
+							Platform.runLater(()->{
+								convoOutput.getChildren().add(new HBox(messageOutput));
+							});
 							
 						} else if (messageFromServer.getType() == ClypeData.LIST_USERS) {
 							MessageClypeData users = (MessageClypeData)messageFromServer;
