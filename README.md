@@ -10,6 +10,6 @@ interface	(GUI)	application.
 
 
 TO-DO:
-1) auto-scroll to bottom of conversation on conversation box 
+1) auto-scroll to bottom of conversation on conversation box (DONE)
 2) expand messages box width. In other words, users sent locally should be displayed to
    right of conversation box
