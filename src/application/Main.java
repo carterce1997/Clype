@@ -35,7 +35,6 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import main.*;
 
-
 public class Main extends Application {
 
 	private int numLinesConvo = 10;
@@ -149,10 +148,9 @@ public class Main extends Application {
 						}
 					} catch (NumberFormatException nfe) {
 						errorField.setText("Invalid port number given.");
-					}catch(IllegalArgumentException iae) {
+					} catch (IllegalArgumentException iae) {
 						errorField.setText(iae.getMessage());
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 
@@ -246,36 +244,38 @@ public class Main extends Application {
 					while (client.connectionOpen() && !closedSocket) {
 						closedSocket = client.recieveData();
 						ClypeData messageFromServer = client.getData();
-												
+
 						if (messageFromServer.getType() == ClypeData.SEND_MESSAGE) {
 							MessageClypeData messageDataFromServer = (MessageClypeData) messageFromServer;
 							String username = messageDataFromServer.getUserName();
 							String message = messageDataFromServer.getData();
-								
+
 							Label messageOutput = new Label(username + ": " + message);
-							messageOutput.setId("user-text");;
-							Platform.runLater(()->{
+							messageOutput.setId("user-text");
+							;
+							Platform.runLater(() -> {
 								convoOutput.getChildren().add(new HBox(messageOutput));
 							});
-							
+
 						} else if (messageFromServer.getType() == ClypeData.LIST_USERS) {
-							MessageClypeData users = (MessageClypeData)messageFromServer;
+							MessageClypeData users = (MessageClypeData) messageFromServer;
 							usersList.setText(users.getData());
 						} else if (messageFromServer.getType() == ClypeData.SEND_FILE) {
 							FileClypeData fileMessageFromServer = (FileClypeData) messageFromServer;
 							String username = fileMessageFromServer.getUserName();
 							String message = fileMessageFromServer.getData();
 
-//							if (!closedSocket) {
-//								if (noMessages) {
-//									convoOutput.clear();
-//									noMessages = false;
-//									convoOutput.setText(username + ": " + message);
-//								} else {
-//									convoOutput.setText(convoOutput.getText() + System.getProperty("line.separator")
-//											+ username + ": " + message);
-//								}
-//							}
+							// if (!closedSocket) {
+							// if (noMessages) {
+							// convoOutput.clear();
+							// noMessages = false;
+							// convoOutput.setText(username + ": " + message);
+							// } else {
+							// convoOutput.setText(convoOutput.getText() +
+							// System.getProperty("line.separator")
+							// + username + ": " + message);
+							// }
+							// }
 						} else if (messageFromServer.getType() == ClypeData.SEND_PHOTO) {
 							PhotoClypeData photoMessageFromServer = (PhotoClypeData) messageFromServer;
 							String username = photoMessageFromServer.getUserName();
@@ -284,8 +284,16 @@ public class Main extends Application {
 							ImageView imageView = new ImageView();
 							Image image = SwingFXUtils.toFXImage(message, null);
 							imageView.setImage(image);
-							Platform.runLater(()->{
-								convoOutput.getChildren().add(new HBox(imageView));
+							imageView.setFitHeight(300);
+							imageView.maxWidth(200.0);
+							imageView.setPreserveRatio(true);
+
+							Label userLabel = new Label(username + ":" + System.lineSeparator());
+							userLabel.setId("user-text");
+
+							VBox userNameAndImage = new VBox(userLabel, imageView);
+							Platform.runLater(() -> {
+								convoOutput.getChildren().add(new HBox(userNameAndImage));
 							});
 						}
 					}
@@ -321,7 +329,7 @@ public class Main extends Application {
 			messageInput.setFont(Font.font("Arial", FontWeight.LIGHT, 18));
 			messageInput.setEditable(true);
 			messageInput.setPromptText("Type a message here!");
-			
+
 			// button to send message
 			Button sendButton = new Button("Send");
 			sendButton.setMinSize(63, 150);
@@ -381,25 +389,26 @@ public class Main extends Application {
 			addPhotoButton.setWrapText(true);
 			addPhotoButton.setTextAlignment(TextAlignment.CENTER);
 			addPhotoButton.setFont(Font.font("Arial", FontWeight.BOLD, 15));
-			addPhotoButton.setOnMouseReleased( new EventHandler<MouseEvent>() {
+			addPhotoButton.setOnMouseReleased(new EventHandler<MouseEvent>() {
 
 				@Override
 				public void handle(MouseEvent event) {
 					FileChooser fileChooser = new FileChooser();
 					fileChooser.setTitle("Select File");
-					
+
 					File file = fileChooser.showOpenDialog(primaryStage);
-					PhotoClypeData photoData = new PhotoClypeData(client.getUserName(), file.getAbsolutePath(), ClypeData.SEND_PHOTO);
-					
+					PhotoClypeData photoData = new PhotoClypeData(client.getUserName(), file.getAbsolutePath(),
+							ClypeData.SEND_PHOTO);
+
 					try {
 						client.setDataToSendToServer(photoData);
 					} catch (Exception ioe) {
 						ioe.printStackTrace();
 					}
 				}
-				
+
 			});
-			
+
 			// HBox to hold both buttons with
 			HBox sendMessageButtons = new HBox();
 			sendMessageButtons.setCenterShape(true);
