@@ -212,7 +212,7 @@ public class Main extends Application {
 			/*
 			 * List users box
 			 */
-			
+
 			// label
 			Label usersBoxLabel = new Label("Users Window");
 			usersBoxLabel.setId("users-box-label");
@@ -251,11 +251,14 @@ public class Main extends Application {
 							String username = messageDataFromServer.getUserName();
 							String message = messageDataFromServer.getData();
 
-							Label messageOutput = new Label(username + ": " + message);
+							Label userNameLabel = new Label(username);
+							userNameLabel.setId("user-name");
+							
+							Label messageOutput = new Label(": " + message);
 							messageOutput.setId("user-text");
 							;
 							Platform.runLater(() -> {
-								convoOutput.getChildren().add(new HBox(messageOutput));
+								convoOutput.getChildren().add(new HBox(userNameLabel, messageOutput));
 							});
 
 						} else if (messageFromServer.getType() == ClypeData.LIST_USERS) {
@@ -265,10 +268,11 @@ public class Main extends Application {
 							FileClypeData fileMessageFromServer = (FileClypeData) messageFromServer;
 							String username = fileMessageFromServer.getUserName();
 							String message = fileMessageFromServer.getData();
-							
+
 							Label messageOutput = new Label(username + ": " + message);
-							messageOutput.setId("user-text");;
-							Platform.runLater(()->{
+							messageOutput.setId("user-name");
+							;
+							Platform.runLater(() -> {
 								convoOutput.getChildren().add(new HBox(messageOutput));
 							});
 
@@ -285,9 +289,14 @@ public class Main extends Application {
 							imageView.setPreserveRatio(true);
 
 							Label userLabel = new Label(username + ":" + System.lineSeparator());
-							userLabel.setId("user-text");
+							userLabel.setAlignment(Pos.CENTER_RIGHT);
+							userLabel.setId("user-name");
 
 							VBox userNameAndImage = new VBox(userLabel, imageView);
+							if (username.equals(client.getUserName())) {
+								userNameAndImage.setAlignment(Pos.CENTER_RIGHT);
+							}
+
 							Platform.runLater(() -> {
 								convoOutput.getChildren().add(new HBox(userNameAndImage));
 							});

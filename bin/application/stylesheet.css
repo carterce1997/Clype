@@ -63,6 +63,13 @@
     -fx-display-caret:true;
 }
 
+#user-name{
+	-fx-font-family: "Arial";
+    -fx-font-size: 18.0;
+    -fx-font-style: italic;
+    -fx-text-fill: rgb(0.0,0.0,0.0);
+    -fx-display-caret:true;
+}
 #user-text{
 	-fx-font-family: "Arial";
     -fx-font-size: 18.0;
