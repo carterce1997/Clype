@@ -11,5 +11,5 @@ interface	(GUI)	application.
 
 TO-DO:
 1) auto-scroll on conversation box 
-2) expand messages box width. In other words, users sent by local should be displayed to
+2) expand messages box width. In other words, users sent locally should be displayed to
    right of conversation box
