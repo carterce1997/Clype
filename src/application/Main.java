@@ -287,15 +287,6 @@ public class Main extends Application {
 							Platform.runLater(()->{
 								convoOutput.getChildren().add(new HBox(imageView));
 							});
-							if (!closedSocket) {
-								if (noMessages) {
-									noMessages = false;
-//									convoOutput.setText(username + ": " + message);
-								} else {
-//									convoOutput.setText(convoOutput.getText() + System.getProperty("line.separator")
-//											+ username + ": " + message);
-								}
-							}
 						}
 					}
 					return null;
