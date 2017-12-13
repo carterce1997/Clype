@@ -7,3 +7,9 @@ Incidentally,	the	word	‘clype’	in	Scottish	slang	stands	for	a	person	who	tel
 https://www.collinsdictionary.com/us/dictionary/english/clype).	In	Clype	2.0	(the	second
 version	of	Clype),	we	implement	an instant	messaging	and	file-sharing	graphical	user	
 interface	(GUI)	application.	
+
+
+TO-DO:
+1) auto-scroll on conversation box 
+2) expand messages box width. In other words, users sent by local should be displayed to
+   right of conversation box
