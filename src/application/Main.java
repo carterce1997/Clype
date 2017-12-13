@@ -241,6 +241,7 @@ public class Main extends Application {
 			Task<Void> incomingMessageTask = new Task<Void>() {
 				@Override
 				protected Void call() throws Exception {
+					boolean noMessages = true;// used to handle default text
 					boolean closedSocket = false;
 					while (client.connectionOpen() && !closedSocket) {
 						closedSocket = client.recieveData();
@@ -265,10 +266,6 @@ public class Main extends Application {
 							String username = fileMessageFromServer.getUserName();
 							String message = fileMessageFromServer.getData();
 
-							Label messageOutput = new Label(username + ":\n" + message);
-							Platform.runLater(()->{
-								convoOutput.getChildren().add(new HBox(messageOutput));
-							});
 //							if (!closedSocket) {
 //								if (noMessages) {
 //									convoOutput.clear();
@@ -282,17 +279,14 @@ public class Main extends Application {
 						} else if (messageFromServer.getType() == ClypeData.SEND_PHOTO) {
 							PhotoClypeData photoMessageFromServer = (PhotoClypeData) messageFromServer;
 							String username = photoMessageFromServer.getUserName();
-
 							BufferedImage message = photoMessageFromServer.getData();
 
-							if (!(message == null)) {
-								ImageView imageView = new ImageView();
-								Image image = SwingFXUtils.toFXImage(message, null);
-								imageView.setImage(image);
-								Platform.runLater(()->{
-									convoOutput.getChildren().add(new HBox(imageView));
-								});
-							}
+							ImageView imageView = new ImageView();
+							Image image = SwingFXUtils.toFXImage(message, null);
+							imageView.setImage(image);
+							Platform.runLater(()->{
+								convoOutput.getChildren().add(new HBox(imageView));
+							});
 						}
 					}
 					return null;
