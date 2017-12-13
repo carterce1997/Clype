@@ -285,12 +285,14 @@ public class Main extends Application {
 
 							BufferedImage message = photoMessageFromServer.getData();
 
-							ImageView imageView = new ImageView();
-							Image image = SwingFXUtils.toFXImage(message, null);
-							imageView.setImage(image);
-							Platform.runLater(()->{
-								convoOutput.getChildren().add(new HBox(imageView));
-							});
+							if (!(message == null)) {
+								ImageView imageView = new ImageView();
+								Image image = SwingFXUtils.toFXImage(message, null);
+								imageView.setImage(image);
+								Platform.runLater(()->{
+									convoOutput.getChildren().add(new HBox(imageView));
+								});
+							}
 						}
 					}
 					return null;
