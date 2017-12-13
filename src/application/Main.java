@@ -240,7 +240,6 @@ public class Main extends Application {
 			Task<Void> incomingMessageTask = new Task<Void>() {
 				@Override
 				protected Void call() throws Exception {
-					boolean noMessages = true;// used to handle default text
 					boolean closedSocket = false;
 					while (client.connectionOpen() && !closedSocket) {
 						closedSocket = client.recieveData();
