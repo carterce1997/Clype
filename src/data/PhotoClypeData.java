@@ -9,15 +9,12 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
-import javafx.scene.image.Image;
-
 public class PhotoClypeData extends ClypeData {
 	private String fileName;
 	private byte[] buffered_image;
 
 	public PhotoClypeData(String userName, String fileName, int type) {
 		super(userName, type);
-
 		this.fileName = fileName;
 
 		try {
@@ -49,7 +46,6 @@ public class PhotoClypeData extends ClypeData {
 	/**
 	 * Reads photo from input filename
 	 */
-
 	public void readData() {
 		/*try {
 			this.image = ImageIO.read(new File(this.fileName));

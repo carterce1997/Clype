@@ -265,17 +265,12 @@ public class Main extends Application {
 							FileClypeData fileMessageFromServer = (FileClypeData) messageFromServer;
 							String username = fileMessageFromServer.getUserName();
 							String message = fileMessageFromServer.getData();
-
-//							if (!closedSocket) {
-//								if (noMessages) {
-//									convoOutput.clear();
-//									noMessages = false;
-//									convoOutput.setText(username + ": " + message);
-//								} else {
-//									convoOutput.setText(convoOutput.getText() + System.getProperty("line.separator")
-//											+ username + ": " + message);
-//								}
-//							}
+							
+							Label messageOutput = new Label(username + ": " + message);
+							messageOutput.setId("user-text");;
+							Platform.runLater(()->{
+								convoOutput.getChildren().add(new HBox(messageOutput));
+							});
 						} else if (messageFromServer.getType() == ClypeData.SEND_PHOTO) {
 							PhotoClypeData photoMessageFromServer = (PhotoClypeData) messageFromServer;
 							String username = photoMessageFromServer.getUserName();
