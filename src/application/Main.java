@@ -212,7 +212,7 @@ public class Main extends Application {
 			/*
 			 * List users box
 			 */
-
+			
 			// label
 			Label usersBoxLabel = new Label("Users Window");
 			usersBoxLabel.setId("users-box-label");
