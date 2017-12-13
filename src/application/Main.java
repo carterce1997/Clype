@@ -1,5 +1,6 @@
 package application;
 
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import data.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -249,7 +251,8 @@ public class Main extends Application {
 							String username = messageDataFromServer.getUserName();
 							String message = messageDataFromServer.getData();
 								
-							Label messageOutput = new Label(username + ":\n" + message);
+							Label messageOutput = new Label(username + ": " + message);
+							messageOutput.setId("user-text");;
 							Platform.runLater(()->{
 								convoOutput.getChildren().add(new HBox(messageOutput));
 							});
@@ -279,13 +282,15 @@ public class Main extends Application {
 						} else if (messageFromServer.getType() == ClypeData.SEND_PHOTO) {
 							PhotoClypeData photoMessageFromServer = (PhotoClypeData) messageFromServer;
 							String username = photoMessageFromServer.getUserName();
-							Image message = photoMessageFromServer.getData();
 
-//							Label messageOutput = new Label(username + ":\n" + message);
+							BufferedImage message = photoMessageFromServer.getData();
+
+							ImageView imageView = new ImageView();
+							Image image = SwingFXUtils.toFXImage(message, null);
+							imageView.setImage(image);
 							Platform.runLater(()->{
-								convoOutput.getChildren().add(new HBox( new ImageView(message)));
+								convoOutput.getChildren().add(new HBox(imageView));
 							});
-							
 //							if (!closedSocket) {
 //								if (noMessages) {
 //									noMessages = false;
@@ -400,7 +405,6 @@ public class Main extends Application {
 					PhotoClypeData photoData = new PhotoClypeData(client.getUserName(), file.getAbsolutePath(), ClypeData.SEND_PHOTO);
 					
 					try {
-						photoData.readClientData();
 						client.setDataToSendToServer(photoData);
 					} catch (Exception ioe) {
 						ioe.printStackTrace();
