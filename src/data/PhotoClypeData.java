@@ -7,13 +7,15 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import javafx.scene.image.Image;
+
 public class PhotoClypeData extends ClypeData {
 	private String fileName;
-	private BufferedImage image;
+	private Image image;
 	
 	public PhotoClypeData(String userName, String fileName, int type) {
 		super(userName, type);
-		this.fileName = fileName;
+		this.fileName = "file://" + fileName;
 	}
 
 	public PhotoClypeData(String userName, int type) {
@@ -32,18 +34,14 @@ public class PhotoClypeData extends ClypeData {
 	 * Reads photo from input filename
 	 */
 	public void readClientData() {
-		try {
-			this.image = ImageIO.read( new File( this.fileName ));
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
+		this.image = new Image( this.fileName );
 	}
 	
 	/**
 	 * Returns stored image
 	 * @return the image
 	 */
-	public RenderedImage getData() {
+	public Image getData() {
 		return this.image;
 	}
 	
@@ -53,7 +51,7 @@ public class PhotoClypeData extends ClypeData {
 	public void writeData( String fileName) {
 		try {
 			File outputFile = new File(fileName);
-			ImageIO.write(this.image, "png", outputFile);
+			ImageIO.write((RenderedImage) this.image, "png", outputFile);
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}

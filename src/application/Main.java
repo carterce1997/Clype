@@ -18,6 +18,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -237,7 +239,6 @@ public class Main extends Application {
 			Task<Void> incomingMessageTask = new Task<Void>() {
 				@Override
 				protected Void call() throws Exception {
-					boolean noMessages = true;// used to handle default text
 					boolean closedSocket = false;
 					while (client.connectionOpen() && !closedSocket) {
 						closedSocket = client.recieveData();
@@ -261,6 +262,10 @@ public class Main extends Application {
 							String username = fileMessageFromServer.getUserName();
 							String message = fileMessageFromServer.getData();
 
+							Label messageOutput = new Label(username + ":\n" + message);
+							Platform.runLater(()->{
+								convoOutput.getChildren().add(new HBox(messageOutput));
+							});
 //							if (!closedSocket) {
 //								if (noMessages) {
 //									convoOutput.clear();
@@ -274,17 +279,22 @@ public class Main extends Application {
 						} else if (messageFromServer.getType() == ClypeData.SEND_PHOTO) {
 							PhotoClypeData photoMessageFromServer = (PhotoClypeData) messageFromServer;
 							String username = photoMessageFromServer.getUserName();
-							RenderedImage message = photoMessageFromServer.getData();
+							Image message = photoMessageFromServer.getData();
 
-							if (!closedSocket) {
-								if (noMessages) {
-									noMessages = false;
-//									convoOutput.setText(username + ": " + message);
-								} else {
-//									convoOutput.setText(convoOutput.getText() + System.getProperty("line.separator")
-//											+ username + ": " + message);
-								}
-							}
+//							Label messageOutput = new Label(username + ":\n" + message);
+							Platform.runLater(()->{
+								convoOutput.getChildren().add(new HBox( new ImageView(message)));
+							});
+							
+//							if (!closedSocket) {
+//								if (noMessages) {
+//									noMessages = false;
+////									convoOutput.setText(username + ": " + message);
+//								} else {
+////									convoOutput.setText(convoOutput.getText() + System.getProperty("line.separator")
+////											+ username + ": " + message);
+//								}
+//							}
 						}
 					}
 					return null;
