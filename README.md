@@ -10,6 +10,7 @@ interface	(GUI)	application.
 
 
 TO-DO:
-1) auto-scroll to bottom of conversation on conversation box (DONE)
-2) expand messages box width. In other words, users sent locally should be displayed to
-   right of conversation box
+1) ~~auto-scroll to bottom of conversation on conversation box (DONE)~~
+2) ~~expand messages box width. In other words, users sent locally should be displayed to
+   right of conversation box~~
+3) Add spacing between bottom of screen and the last message shown. The message box must be "full" or filled with messages to see this. There is not enough room between the last message and the bottom of the message window.  
