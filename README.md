@@ -14,5 +14,5 @@ TO-DO:
 2) ~~expand messages box width. In other words, users sent locally should be displayed to
    right of conversation box~~
 3) Add spacing between bottom of screen and the last message shown. The message box must be "full" or filled with messages to see this. There is not enough room between the last message and the bottom of the message window.  
-4) Add an message box/error box on right side of screen level with "Send Message Window." This will display text if a photo is ready to      send, if the user sends an empty input, or if the chosen file is not "good"
+4) Add an message box/error box on right side of screen level with "Send Message Window." This will display text if a photo is ready to      send, if the user sends an empty input, or if the chosen file is not "good". Could shrink size of send message window to give room for error box
 5) 
