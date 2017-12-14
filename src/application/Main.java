@@ -253,9 +253,9 @@ public class Main extends Application {
 							Label userNameLabel = new Label(username);
 							userNameLabel.setId("user-name");
 							
-							Label messageOutput = new Label(": " + message);
+							Label messageOutput = new Label(":" + System.lineSeparator() + message);
 							messageOutput.setId("user-text");
-							;
+							
 							Platform.runLater(() -> {
 								convoOutput.getChildren().add(new HBox(userNameLabel, messageOutput));
 							});
@@ -268,7 +268,7 @@ public class Main extends Application {
 							String username = fileMessageFromServer.getUserName();
 							String message = fileMessageFromServer.getData();
 
-							Label messageOutput = new Label(username + ": " + message);
+							Label messageOutput = new Label(username + ":" + System.lineSeparator() + message);
 							messageOutput.setId("user-name");
 							;
 							Platform.runLater(() -> {
@@ -300,6 +300,7 @@ public class Main extends Application {
 								convoOutput.getChildren().add(new HBox(userNameAndImage));
 							});
 						}
+						convoContainer.vvalueProperty().bind(convoOutput.heightProperty()); // scroll down
 					}
 					return null;
 				}
