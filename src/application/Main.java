@@ -1,7 +1,6 @@
 package application;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -250,14 +249,24 @@ public class Main extends Application {
 							String username = messageDataFromServer.getUserName();
 							String message = messageDataFromServer.getData();
 
-							Label userNameLabel = new Label(username);
-							userNameLabel.setId("user-name");
-							
-							Label messageOutput = new Label(":" + System.lineSeparator() + message);
+							Label userLabel = new Label(username + ':');
+							userLabel.setTranslateX(10);
+							userLabel.setId("user-name");
+
+							Label messageOutput = new Label('\t' + message);
 							messageOutput.setId("user-text");
+
+							VBox userAndMessage = new VBox(userLabel, messageOutput);
+							userAndMessage.setMinWidth(720);
 							
+							// If this client sent the message, put message to right of screen
+							if (username.equals(client.getUserName()))
+								userAndMessage.setAlignment(Pos.BASELINE_RIGHT);
+							else
+								userAndMessage.setAlignment(Pos.BASELINE_LEFT);
+
 							Platform.runLater(() -> {
-								convoOutput.getChildren().add(new HBox(userNameLabel, messageOutput));
+								convoOutput.getChildren().add(new HBox(userAndMessage));
 							});
 
 						} else if (messageFromServer.getType() == ClypeData.LIST_USERS) {
@@ -288,16 +297,18 @@ public class Main extends Application {
 							imageView.setPreserveRatio(true);
 
 							Label userLabel = new Label(username + ":" + System.lineSeparator());
-							userLabel.setAlignment(Pos.CENTER_RIGHT);
+							userLabel.setTranslateX(10);
 							userLabel.setId("user-name");
 
-							VBox userNameAndImage = new VBox(userLabel, imageView);
-							if (username.equals(client.getUserName())) {
-								userNameAndImage.setAlignment(Pos.CENTER_RIGHT);
-							}
+							VBox userAndImage = new VBox(userLabel, imageView);
+							userAndImage.setMinWidth(720);
+							if (username.equals(client.getUserName()))
+								userAndImage.setAlignment(Pos.CENTER_RIGHT);
+							else
+								userLabel.setAlignment(Pos.CENTER_LEFT);
 
 							Platform.runLater(() -> {
-								convoOutput.getChildren().add(new HBox(userNameAndImage));
+								convoOutput.getChildren().add(new HBox(userAndImage));
 							});
 						}
 						convoContainer.vvalueProperty().bind(convoOutput.heightProperty()); // scroll down
