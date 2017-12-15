@@ -45,7 +45,7 @@ public class Main extends Application {
 
 	private static final int WidthLoginScreen = 300;
 	private static final int HeightLoginScreen = 200;
-	private static final String iconFilePath = "/icon.jpg";
+	private static final String iconFilePath = "/resources/icon.jpg";
 	
 	private int numLinesConvo = 10;
 	private int numLinesUsers = numLinesConvo;
@@ -96,9 +96,8 @@ public class Main extends Application {
 	public void showLoginWindow(Stage primaryStage) {
 
 		try {			
-			//Image icon = new Image(getClass().getResourceAsStream(iconFilePath));
-
-		//	primaryStage.getIcons().add(icon);
+			
+			primaryStage.getIcons().add(new Image(iconFilePath));
 			primaryStage.setTitle("Login - Clype");
 
 			/*
@@ -226,7 +225,7 @@ public class Main extends Application {
 	public void showMainWindow(Stage primaryStage) {
 		try {
 
-		//	primaryStage.getIcons().add(new Image("icon.jpg"));
+			primaryStage.getIcons().add(new Image("icon.jpg"));
 			primaryStage.setTitle("Messenger - Clype");
 
 			/*
