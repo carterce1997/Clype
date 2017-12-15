@@ -97,7 +97,7 @@ public class Main extends Application {
 	public void showLoginWindow(Stage primaryStage) {
 
 		try {
-			primaryStage.getIcons().add(new Image("icon.jpg"));
+//			primaryStage.getIcons().add(new Image("icon.jpg"));
 			primaryStage.setTitle("Login - Clype");
 
 			/*
