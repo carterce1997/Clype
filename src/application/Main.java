@@ -4,8 +4,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URL;
+
 import javafx.util.Duration;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 import data.*;
 import javafx.application.Application;
@@ -46,14 +51,16 @@ import main.*;
 
 public class Main extends Application {
 
-	private static int WidthLoginScreen = 300;
-	private static int HeightLoginScreen = 200;
-
+	private static final int WidthLoginScreen = 300;
+	private static final int HeightLoginScreen = 200;
+	private static final String iconFilePath = "/resources/icon.jpg";
+	
 	private int numLinesConvo = 10;
 	private int numLinesUsers = numLinesConvo;
 	private ClypeClient client;
 	private ArrayList<HBox> messages;
-
+	
+	
 	public static final int DEFAULT_PORT = 7000;
 	static int dx = 1;
 	static int dy = 1;
@@ -96,8 +103,9 @@ public class Main extends Application {
 
 	public void showLoginWindow(Stage primaryStage) {
 
-		try {
-			primaryStage.getIcons().add(new Image("icon.jpg"));
+		try {			
+			
+			primaryStage.getIcons().add(new Image(iconFilePath));
 			primaryStage.setTitle("Login - Clype");
 
 			/*
