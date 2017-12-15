@@ -86,6 +86,7 @@ public class Main extends Application {
 
 				ball.setTranslateX(ball.getTranslateX() + dx);
 				ball.setTranslateY(ball.getTranslateY() + dy);
+
 			}
 		});
 
