@@ -4,8 +4,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URL;
+
 import javafx.util.Duration;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
+
 import data.*;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -45,14 +50,13 @@ public class Main extends Application {
 
 	private static final int WidthLoginScreen = 300;
 	private static final int HeightLoginScreen = 200;
-	private static final String iconFilePath = "/resources/icon.jpg";
-	
+	private static final String iconFilePath = "/icon.jpg";
+
 	private int numLinesConvo = 10;
 	private int numLinesUsers = numLinesConvo;
 	private ClypeClient client;
 	private ArrayList<HBox> messages;
-	
-	
+
 	public static final int DEFAULT_PORT = 7000;
 	static int dx = 1;
 	static int dy = 1;
@@ -95,9 +99,14 @@ public class Main extends Application {
 
 	public void showLoginWindow(Stage primaryStage) {
 
-		try {			
-			
-			primaryStage.getIcons().add(new Image(iconFilePath));
+		try {
+
+			try {
+				primaryStage.getIcons().add(new Image(getClass().getResource(iconFilePath).toExternalForm()));
+			} catch (NullPointerException npe) {
+				System.err.println("Main window icon cannot be displayed");
+			}
+
 			primaryStage.setTitle("Login - Clype");
 
 			/*
@@ -225,7 +234,12 @@ public class Main extends Application {
 	public void showMainWindow(Stage primaryStage) {
 		try {
 
-			primaryStage.getIcons().add(new Image("icon.jpg"));
+			try {
+				primaryStage.getIcons().add(new Image(getClass().getResource(iconFilePath).toExternalForm()));
+			} catch (NullPointerException npe) {
+				System.err.println("Main window icon cannot be displayed");
+			}
+
 			primaryStage.setTitle("Messenger - Clype");
 
 			/*
