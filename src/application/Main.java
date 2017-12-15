@@ -48,70 +48,68 @@ public class Main extends Application {
 
 	private static int WidthLoginScreen = 300;
 	private static int HeightLoginScreen = 200;
-	
+
 	private int numLinesConvo = 10;
 	private int numLinesUsers = numLinesConvo;
 	private ClypeClient client;
 	private ArrayList<HBox> messages;
 
 	public static final int DEFAULT_PORT = 7000;
-    static int dx = 1;
-    static int dy = 1;
-	
-	
+	static int dx = 1;
+	static int dy = 1;
+
 	private void addBouncyBall(final Scene scene) {
-        Circle ball = new Circle(50, 50, 20);
-        ball.setFill(Color.TEAL);
-        ball.setStroke(Color.NAVY);
-        
-        final BorderPane root = (BorderPane) scene.getRoot();
-        root.getChildren().add(ball);
-        
-        Timeline tl = new Timeline();
-        tl.setCycleCount(Animation.INDEFINITE);
-        KeyFrame moveBall = new KeyFrame(Duration.seconds(.0100),
-                new EventHandler<ActionEvent>() {
+		Circle ball = new Circle(50, 50, 20);
+		ball.setFill(Color.TEAL);
+		ball.setStroke(Color.NAVY);
 
-                    public void handle(ActionEvent event) {
+		final BorderPane root = (BorderPane) scene.getRoot();
+		root.getChildren().add(ball);
 
-                        double xMin = ball.getBoundsInParent().getMinX();
-                        double yMin = ball.getBoundsInParent().getMinY();
-                        double xMax = ball.getBoundsInParent().getMaxX();
-                        double yMax = ball.getBoundsInParent().getMaxY();
+		Timeline tl = new Timeline();
+		tl.setCycleCount(Animation.INDEFINITE);
+		KeyFrame moveBall = new KeyFrame(Duration.seconds(.0100), new EventHandler<ActionEvent>() {
 
-                        if (xMin < 0 || xMax > scene.getWidth()) {
-                            dx = dx * -1;
-                        }
-                        if (yMin < 0 || yMax > scene.getHeight()) {
-                            dy = dy * -1;
-                        }
+			public void handle(ActionEvent event) {
 
-                        ball.setTranslateX(ball.getTranslateX() + dx);
-                        ball.setTranslateY(ball.getTranslateY() + dy);
+				double xMin = ball.getBoundsInParent().getMinX();
+				double yMin = ball.getBoundsInParent().getMinY();
+				double xMax = ball.getBoundsInParent().getMaxX();
+				double yMax = ball.getBoundsInParent().getMaxY();
 
-                    }
-                });
+				if (xMin < 0 || xMax > scene.getWidth()) {
+					dx = dx * -1;
+				}
+				if (yMin < 0 || yMax > scene.getHeight()) {
+					dy = dy * -1;
+				}
 
-        tl.getKeyFrames().add(moveBall);
-        tl.play();
-    }
-	
+				ball.setTranslateX(ball.getTranslateX() + dx);
+				ball.setTranslateY(ball.getTranslateY() + dy);
+
+			}
+		});
+
+		tl.getKeyFrames().add(moveBall);
+		tl.play();
+	}
+
 	public void showLoginWindow(Stage primaryStage) {
 
 		try {
+			primaryStage.getIcons().add(new Image("icon.jpg"));
+			primaryStage.setTitle("Login - Clype");
 
-			primaryStage.setTitle("Welcome!");
-			
 			/*
 			 * create root
 			 */
 			BorderPane root = new BorderPane();
 			Scene scene = new Scene(root, WidthLoginScreen, HeightLoginScreen);
-			
+
 			scene.getStylesheets().add(getClass().getResource("stylesheet.css").toExternalForm());
 
-	        addBouncyBall(scene); 
-			
+			addBouncyBall(scene);
+
 			/*
 			 * title
 			 */
@@ -155,7 +153,6 @@ public class Main extends Application {
 			credentialsLabels.getChildren().addAll(usernameLabel, hostnameLabel, portLabel);
 			credentialsLabels.setSpacing(10);
 
-			
 			// add labels to root
 			root.setLeft(credentialsLabels);
 
@@ -227,6 +224,9 @@ public class Main extends Application {
 
 	public void showMainWindow(Stage primaryStage) {
 		try {
+
+			primaryStage.getIcons().add(new Image("icon.jpg"));
+			primaryStage.setTitle("Messenger - Clype");
 
 			/*
 			 * create root
