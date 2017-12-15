@@ -1,10 +1,10 @@
 package application;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import javafx.util.Duration;
 import java.util.ArrayList;
 
 import data.*;
@@ -12,12 +12,16 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.shape.Circle;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -27,6 +31,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -34,17 +39,65 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import main.*;
 
 public class Main extends Application {
 
+	private static int WidthLoginScreen = 300;
+	private static int HeightLoginScreen = 200;
+	
 	private int numLinesConvo = 10;
 	private int numLinesUsers = numLinesConvo;
 	private ClypeClient client;
 	private ArrayList<HBox> messages;
 
 	public static final int DEFAULT_PORT = 7000;
+    static int dx = 1;
+    static int dy = 1;
+	
+	
+	private void addBouncyBall(final Scene scene) {
+        final Circle ball = new Circle(50, 50, 20);
+        ball.setFill(Color.color(Math.random(),Math.random(),Math.random()));
+        
+        final BorderPane root = (BorderPane) scene.getRoot();
+        root.getChildren().add(ball);
+        
+        ball.setTranslateX(Math.random()*WidthLoginScreen);
+        ball.setTranslateY(Math.random()*WidthLoginScreen);
+        
+        Timeline tl = new Timeline();
+        tl.setCycleCount(Animation.INDEFINITE);
+        KeyFrame moveBall = new KeyFrame(Duration.seconds(.0100),
+                new EventHandler<ActionEvent>() {
 
+                    public void handle(ActionEvent event) {
+
+                        double xMin = ball.getBoundsInParent().getMinX();
+                        double yMin = ball.getBoundsInParent().getMinY();
+                        double xMax = ball.getBoundsInParent().getMaxX();
+                        double yMax = ball.getBoundsInParent().getMaxY();
+
+                        if (xMin < 0 || xMax > scene.getWidth()) {
+                            dx = dx * -1;
+                        }
+                        if (yMin < 0 || yMax > scene.getHeight()) {
+                            dy = dy * -1;
+                        }
+
+                        ball.setTranslateX(ball.getTranslateX() + dx);
+                        ball.setTranslateY(ball.getTranslateY() + dy);
+
+                    }
+                });
+
+        tl.getKeyFrames().add(moveBall);
+        tl.play();
+    }
+	
 	public void showLoginWindow(Stage primaryStage) {
 
 		try {
@@ -52,9 +105,11 @@ public class Main extends Application {
 			 * create root
 			 */
 			BorderPane root = new BorderPane();
-			Scene scene = new Scene(root, 300, 200);
+			Scene scene = new Scene(root, WidthLoginScreen, HeightLoginScreen);
 			scene.getStylesheets().add(getClass().getResource("stylesheet.css").toExternalForm());
 
+	        addBouncyBall(scene); 
+			
 			/*
 			 * title
 			 */
@@ -98,6 +153,7 @@ public class Main extends Application {
 			credentialsLabels.getChildren().addAll(usernameLabel, hostnameLabel, portLabel);
 			credentialsLabels.setSpacing(10);
 
+			
 			// add labels to root
 			root.setLeft(credentialsLabels);
 
@@ -250,36 +306,36 @@ public class Main extends Application {
 							MessageClypeData messageDataFromServer = (MessageClypeData) messageFromServer;
 							String username = messageDataFromServer.getUserName();
 							String message = messageDataFromServer.getData();
-							
+
 							Label messageOutput = new Label(message);
 							messageOutput.setFont(Font.font(18));
-							
+
 							if (username.equals(client.getUserName())) {
 								Label usernameOutput = new Label("me:");
 								usernameOutput.setFont(Font.font("Serif", FontPosture.ITALIC, 24));
-								
+
 								VBox messageOutputVBox = new VBox(usernameOutput, messageOutput);
 								messageOutputVBox.setMinWidth(.9 * convoContainer.getWidth());
-								
+
 								messageOutputVBox.setAlignment(Pos.CENTER_RIGHT);
-								
+
 								Platform.runLater(() -> {
-									convoOutput.getChildren().add( messageOutputVBox);
+									convoOutput.getChildren().add(messageOutputVBox);
 								});
 							} else {
 								Label usernameOutput = new Label(username + ":");
 								usernameOutput.setFont(Font.font("Serif", FontPosture.ITALIC, 24));
-								
+
 								HBox spacer = new HBox();
 								spacer.setMinWidth(.1 * convoContainer.getWidth());
-								HBox messageOutputVBox = new HBox(spacer, new VBox(usernameOutput, messageOutput));								
+								HBox messageOutputVBox = new HBox(spacer, new VBox(usernameOutput, messageOutput));
 								messageOutputVBox.setMinWidth(.9 * convoContainer.getWidth());
-								
+
 								Platform.runLater(() -> {
-									convoOutput.getChildren().add( messageOutputVBox);
+									convoOutput.getChildren().add(messageOutputVBox);
 								});
 							}
-							
+
 						} else if (messageFromServer.getType() == ClypeData.LIST_USERS) {
 							MessageClypeData users = (MessageClypeData) messageFromServer;
 							usersList.setText(users.getData());
@@ -290,34 +346,32 @@ public class Main extends Application {
 
 							Label messageOutput = new Label(message);
 							messageOutput.setFont(Font.font(18));
-							
+
 							if (username.equals(client.getUserName())) {
 								Label usernameOutput = new Label("me:");
 								usernameOutput.setFont(Font.font("Serif", FontPosture.ITALIC, 24));
-								
+
 								VBox messageOutputVBox = new VBox(usernameOutput, messageOutput);
 								messageOutputVBox.setMinWidth(.9 * convoContainer.getWidth());
-								
+
 								messageOutputVBox.setAlignment(Pos.CENTER_RIGHT);
-								
+
 								Platform.runLater(() -> {
-									convoOutput.getChildren().add( messageOutputVBox);
+									convoOutput.getChildren().add(messageOutputVBox);
 								});
 							} else {
 								Label usernameOutput = new Label(username + ":");
 								usernameOutput.setFont(Font.font("Serif", FontPosture.ITALIC, 24));
-								
+
 								HBox spacer = new HBox();
 								spacer.setMinWidth(.1 * convoContainer.getWidth());
-								HBox messageOutputVBox = new HBox(spacer, new VBox(usernameOutput, messageOutput));								
+								HBox messageOutputVBox = new HBox(spacer, new VBox(usernameOutput, messageOutput));
 								messageOutputVBox.setMinWidth(.9 * convoContainer.getWidth());
-								
+
 								Platform.runLater(() -> {
-									convoOutput.getChildren().add( messageOutputVBox);
+									convoOutput.getChildren().add(messageOutputVBox);
 								});
 							}
-							
-							
 
 						} else if (messageFromServer.getType() == ClypeData.SEND_PHOTO) {
 							PhotoClypeData photoMessageFromServer = (PhotoClypeData) messageFromServer;
@@ -334,26 +388,26 @@ public class Main extends Application {
 							if (username.equals(client.getUserName())) {
 								Label usernameOutput = new Label("me:");
 								usernameOutput.setFont(Font.font("Serif", FontPosture.ITALIC, 24));
-								
+
 								VBox messageOutputVBox = new VBox(usernameOutput, imageView);
 								messageOutputVBox.setMinWidth(.9 * convoContainer.getWidth());
-								
+
 								messageOutputVBox.setAlignment(Pos.CENTER_RIGHT);
-								
+
 								Platform.runLater(() -> {
-									convoOutput.getChildren().add( messageOutputVBox);
+									convoOutput.getChildren().add(messageOutputVBox);
 								});
 							} else {
 								Label usernameOutput = new Label(username + ":");
 								usernameOutput.setFont(Font.font("Serif", FontPosture.ITALIC, 24));
-								
+
 								HBox spacer = new HBox();
 								spacer.setMinWidth(.1 * convoContainer.getWidth());
-								HBox messageOutputVBox = new HBox(spacer, new VBox(usernameOutput, imageView));								
+								HBox messageOutputVBox = new HBox(spacer, new VBox(usernameOutput, imageView));
 								messageOutputVBox.setMinWidth(.9 * convoContainer.getWidth());
-								
+
 								Platform.runLater(() -> {
-									convoOutput.getChildren().add( messageOutputVBox);
+									convoOutput.getChildren().add(messageOutputVBox);
 								});
 							}
 						}
