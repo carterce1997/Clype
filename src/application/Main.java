@@ -1,6 +1,7 @@
 package application;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -27,6 +28,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
@@ -248,27 +250,36 @@ public class Main extends Application {
 							MessageClypeData messageDataFromServer = (MessageClypeData) messageFromServer;
 							String username = messageDataFromServer.getUserName();
 							String message = messageDataFromServer.getData();
-
-							Label userLabel = new Label(username + ':');
-							userLabel.setTranslateX(10);
-							userLabel.setId("user-name");
-
-							Label messageOutput = new Label('\t' + message);
-							messageOutput.setId("user-text");
-
-							VBox userAndMessage = new VBox(userLabel, messageOutput);
-							userAndMessage.setMinWidth(720);
 							
-							// If this client sent the message, put message to right of screen
-							if (username.equals(client.getUserName()))
-								userAndMessage.setAlignment(Pos.BASELINE_RIGHT);
-							else
-								userAndMessage.setAlignment(Pos.BASELINE_LEFT);
-
-							Platform.runLater(() -> {
-								convoOutput.getChildren().add(new HBox(userAndMessage));
-							});
-
+							Label messageOutput = new Label(message);
+							messageOutput.setFont(Font.font(18));
+							
+							if (username.equals(client.getUserName())) {
+								Label usernameOutput = new Label("me:");
+								usernameOutput.setFont(Font.font("Serif", FontPosture.ITALIC, 24));
+								
+								VBox messageOutputVBox = new VBox(usernameOutput, messageOutput);
+								messageOutputVBox.setMinWidth(.9 * convoContainer.getWidth());
+								
+								messageOutputVBox.setAlignment(Pos.CENTER_RIGHT);
+								
+								Platform.runLater(() -> {
+									convoOutput.getChildren().add( messageOutputVBox);
+								});
+							} else {
+								Label usernameOutput = new Label(username + ":");
+								usernameOutput.setFont(Font.font("Serif", FontPosture.ITALIC, 24));
+								
+								HBox spacer = new HBox();
+								spacer.setMinWidth(.1 * convoContainer.getWidth());
+								HBox messageOutputVBox = new HBox(spacer, new VBox(usernameOutput, messageOutput));								
+								messageOutputVBox.setMinWidth(.9 * convoContainer.getWidth());
+								
+								Platform.runLater(() -> {
+									convoOutput.getChildren().add( messageOutputVBox);
+								});
+							}
+							
 						} else if (messageFromServer.getType() == ClypeData.LIST_USERS) {
 							MessageClypeData users = (MessageClypeData) messageFromServer;
 							usersList.setText(users.getData());
@@ -277,12 +288,36 @@ public class Main extends Application {
 							String username = fileMessageFromServer.getUserName();
 							String message = fileMessageFromServer.getData();
 
-							Label messageOutput = new Label(username + ":" + System.lineSeparator() + message);
-							messageOutput.setId("user-name");
-							;
-							Platform.runLater(() -> {
-								convoOutput.getChildren().add(new HBox(messageOutput));
-							});
+							Label messageOutput = new Label(message);
+							messageOutput.setFont(Font.font(18));
+							
+							if (username.equals(client.getUserName())) {
+								Label usernameOutput = new Label("me:");
+								usernameOutput.setFont(Font.font("Serif", FontPosture.ITALIC, 24));
+								
+								VBox messageOutputVBox = new VBox(usernameOutput, messageOutput);
+								messageOutputVBox.setMinWidth(.9 * convoContainer.getWidth());
+								
+								messageOutputVBox.setAlignment(Pos.CENTER_RIGHT);
+								
+								Platform.runLater(() -> {
+									convoOutput.getChildren().add( messageOutputVBox);
+								});
+							} else {
+								Label usernameOutput = new Label(username + ":");
+								usernameOutput.setFont(Font.font("Serif", FontPosture.ITALIC, 24));
+								
+								HBox spacer = new HBox();
+								spacer.setMinWidth(.1 * convoContainer.getWidth());
+								HBox messageOutputVBox = new HBox(spacer, new VBox(usernameOutput, messageOutput));								
+								messageOutputVBox.setMinWidth(.9 * convoContainer.getWidth());
+								
+								Platform.runLater(() -> {
+									convoOutput.getChildren().add( messageOutputVBox);
+								});
+							}
+							
+							
 
 						} else if (messageFromServer.getType() == ClypeData.SEND_PHOTO) {
 							PhotoClypeData photoMessageFromServer = (PhotoClypeData) messageFromServer;
@@ -296,20 +331,31 @@ public class Main extends Application {
 							imageView.maxWidth(200.0);
 							imageView.setPreserveRatio(true);
 
-							Label userLabel = new Label(username + ":" + System.lineSeparator());
-							userLabel.setTranslateX(10);
-							userLabel.setId("user-name");
-
-							VBox userAndImage = new VBox(userLabel, imageView);
-							userAndImage.setMinWidth(720);
-							if (username.equals(client.getUserName()))
-								userAndImage.setAlignment(Pos.CENTER_RIGHT);
-							else
-								userLabel.setAlignment(Pos.CENTER_LEFT);
-
-							Platform.runLater(() -> {
-								convoOutput.getChildren().add(new HBox(userAndImage));
-							});
+							if (username.equals(client.getUserName())) {
+								Label usernameOutput = new Label("me:");
+								usernameOutput.setFont(Font.font("Serif", FontPosture.ITALIC, 24));
+								
+								VBox messageOutputVBox = new VBox(usernameOutput, imageView);
+								messageOutputVBox.setMinWidth(.9 * convoContainer.getWidth());
+								
+								messageOutputVBox.setAlignment(Pos.CENTER_RIGHT);
+								
+								Platform.runLater(() -> {
+									convoOutput.getChildren().add( messageOutputVBox);
+								});
+							} else {
+								Label usernameOutput = new Label(username + ":");
+								usernameOutput.setFont(Font.font("Serif", FontPosture.ITALIC, 24));
+								
+								HBox spacer = new HBox();
+								spacer.setMinWidth(.1 * convoContainer.getWidth());
+								HBox messageOutputVBox = new HBox(spacer, new VBox(usernameOutput, imageView));								
+								messageOutputVBox.setMinWidth(.9 * convoContainer.getWidth());
+								
+								Platform.runLater(() -> {
+									convoOutput.getChildren().add( messageOutputVBox);
+								});
+							}
 						}
 						convoContainer.vvalueProperty().bind(convoOutput.heightProperty()); // scroll down
 					}
