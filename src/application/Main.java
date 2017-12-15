@@ -61,13 +61,11 @@ public class Main extends Application {
 	
 	private void addBouncyBall(final Scene scene) {
         Circle ball = new Circle(50, 50, 20);
-        ball.setFill(Color.color(Math.random(),Math.random(),Math.random()));
+        ball.setFill(Color.TEAL);
+        ball.setStroke(Color.NAVY);
         
         final BorderPane root = (BorderPane) scene.getRoot();
         root.getChildren().add(ball);
-        
-        ball.setTranslateX(Math.random()*WidthLoginScreen);
-        ball.setTranslateY(Math.random()*WidthLoginScreen);
         
         Timeline tl = new Timeline();
         tl.setCycleCount(Animation.INDEFINITE);
