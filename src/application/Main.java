@@ -4,14 +4,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.URL;
-
 import javafx.util.Duration;
 import java.util.ArrayList;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-
 import data.*;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -19,9 +13,7 @@ import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
