@@ -51,6 +51,8 @@ public class ClypeServer {
 		try {
 			ServerSocket socket = new ServerSocket(port);
 
+			System.out.println("Server is started.");
+			
 			while (!this.closeConnection) {
 				Socket clientSocket = socket.accept();
 				ServerSideClientIO newServerSideClientIO = new ServerSideClientIO(this, clientSocket);
