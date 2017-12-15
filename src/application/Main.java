@@ -60,7 +60,7 @@ public class Main extends Application {
 	
 	
 	private void addBouncyBall(final Scene scene) {
-        final Circle ball = new Circle(50, 50, 20);
+        Circle ball = new Circle(50, 50, 20);
         ball.setFill(Color.color(Math.random(),Math.random(),Math.random()));
         
         final BorderPane root = (BorderPane) scene.getRoot();
@@ -101,11 +101,15 @@ public class Main extends Application {
 	public void showLoginWindow(Stage primaryStage) {
 
 		try {
+
+			primaryStage.setTitle("Welcome!");
+			
 			/*
 			 * create root
 			 */
 			BorderPane root = new BorderPane();
 			Scene scene = new Scene(root, WidthLoginScreen, HeightLoginScreen);
+			
 			scene.getStylesheets().add(getClass().getResource("stylesheet.css").toExternalForm());
 
 	        addBouncyBall(scene); 
